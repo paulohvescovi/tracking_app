@@ -24,7 +24,16 @@ class MeusDadosDao {
 
     Map<String, dynamic> map = toMap(meusDados);
 
-    return db.insert(tableName, map);
+    List<dynamic> whereArgs = List();
+    whereArgs.add(1);
+
+    MeusDados existente = await findById();
+    if (existente == null) {
+      return db.insert(tableName, map);
+    } else {
+      return db.update(tableName, map, where: "id = ?", whereArgs: whereArgs);
+    }
+
   }
 
   Map<String, dynamic> toMap(MeusDados meusDados) {
@@ -41,14 +50,15 @@ class MeusDadosDao {
   Future<MeusDados> findById() async {
     Database db = await getDatabase();
 
-    List<dynamic> whereArgs;
+    List<dynamic> whereArgs = List();
     whereArgs.add(1);
 
+    MeusDados m = null;
     var mapList = await db.query(tableName, where: "id = ?", whereArgs: whereArgs);
     mapList.forEach((row) {
-      return toMeusDados(row);
+      m = toMeusDados(row);
     });
-    return null;
+    return m;
   }
 
   MeusDados toMeusDados(Map<String, dynamic> row) {
@@ -57,8 +67,8 @@ class MeusDadosDao {
         row[nome],
         row[email],
         row[cpf],
-        row[permite_enviar_notificacoes],
-        row[permite_enviar_emails]
+        row[permite_enviar_notificacoes]  == 1 ? true : false,
+        row[permite_enviar_emails]  == 1 ? true : false
     );
   }
 

@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:tracking_app/models/meus_dados.dart';
 import 'package:tracking_app/screens/meus_dados_screen.dart';
+import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  MeusDadosDao meusDadosDao = new MeusDadosDao();
+  MeusDados meusDados = MeusDados(1, "Nome", "email@dominio.com", "", true, true);
 
   @override
   Widget build(BuildContext context) {
+   carregarMeusDados();
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -21,8 +31,8 @@ class HomeScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              accountEmail: Text("email@domain.com"),
-              accountName: Text("User"),
+              accountName: Text(meusDados.nome),
+              accountEmail: Text(meusDados.email),
               currentAccountPicture: CircleAvatar(
                 child: Icon(Icons.person, size: 40,),
               ),
@@ -32,12 +42,13 @@ class HomeScreen extends StatelessWidget {
               title: Text("Meus Dados"),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context)
-                    .push(
+                Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => MeusDadosScreen(),
                   ),
-                );
+                ).then((value) => {
+                  carregarMeusDados()
+                });
               },
             ),
             ListTile(
@@ -133,5 +144,13 @@ class HomeScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void carregarMeusDados() {
+    meusDadosDao.findById().then((data)  {
+      setState(() {
+        meusDados = data;
+      });
+    });
   }
 }
