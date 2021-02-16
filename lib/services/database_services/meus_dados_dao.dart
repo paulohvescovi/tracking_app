@@ -72,4 +72,8 @@ class MeusDadosDao {
     );
   }
 
+  static MeusDados defaultMeusDados() {
+    return MeusDados(1, "Nome", "email@dominio.com", "", true, true);
+  }
+
 }

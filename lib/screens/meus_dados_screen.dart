@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracking_app/components/progress_carregando.dart';
 import 'package:tracking_app/models/meus_dados.dart';
 import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
 
@@ -52,6 +53,11 @@ class _MeusDadosScreenState extends State<MeusDadosScreen> {
               break;
             case ConnectionState.done:
               MeusDados meusDados = snapshot.data;
+              if (meusDados == null){
+                meusDados = MeusDadosDao.defaultMeusDados();
+                meusDados.nome = "";
+                meusDados.email = "";
+              }
               _permiteEnviarNotificacoes = meusDados.enviarNotificacoes;
               _permiteEnviarEmail = meusDados.enviarEmail;
               _nomeEditController.text = meusDados.nome;
@@ -194,20 +200,4 @@ class _MeusDadosScreenState extends State<MeusDadosScreen> {
     }
   }
 
-}
-
-class ProgressBarCarregando extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          Text("Carregando")
-        ],
-      ),
-    );
-  }
 }

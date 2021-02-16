@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/meus_dados.dart';
 import 'package:tracking_app/screens/meus_dados_screen.dart';
+import 'package:tracking_app/screens/rastrear_encomendas_screen.dart';
+import 'package:tracking_app/services/api_services/redesul/redesul_api_config.dart';
+import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
+import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
+
+import 'novo_rastreio_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,11 +17,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   MeusDadosDao meusDadosDao = new MeusDadosDao();
-  MeusDados meusDados = MeusDados(1, "Nome", "email@dominio.com", "", true, true);
+  EncomendaDao encomendaDao = new EncomendaDao();
+  MeusDados meusDados = MeusDadosDao.defaultMeusDados();
+  
+  RedeSulClientService redeSulClientService = new RedeSulClientService();
+
+  String _qtdEncomendasEmRastreio = "0";
 
   @override
   Widget build(BuildContext context) {
    carregarMeusDados();
+   carregarEncomendasEmRastreio();
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -56,6 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text("Rastrear encomendas"),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => RastrearEncomendasScreen(),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -110,7 +128,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Theme.of(context).primaryColor,
                 child: InkWell(
                   onTap: () {
-                    //todo onclick
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => RastrearEncomendasScreen(),
+                      ),
+                    );
                   },
                   child: Container(
                     padding: EdgeInsets.all(8.0),
@@ -121,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          "4",
+                          _qtdEncomendasEmRastreio,
                           style: TextStyle(color: Colors.white, fontSize: 40),
                         ),
                         Text(
@@ -140,7 +162,11 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => NovoRastreioScreen(),
+            ),
+          );
         },
       ),
     );
@@ -149,8 +175,27 @@ class _HomeScreenState extends State<HomeScreen> {
   void carregarMeusDados() {
     meusDadosDao.findById().then((data)  {
       setState(() {
-        meusDados = data;
+        if (data != null){
+          meusDados = data;
+        }
       });
     });
   }
+
+  void carregarEncomendasEmRastreio() {
+    encomendaDao.findAll().then((data)  {
+      setState(() {
+        if (data != null){
+          int qtd = 0;
+          data.forEach((element) {
+            if (element.finalizado == Finalizado.N){
+                qtd++;
+            }
+          });
+          _qtdEncomendasEmRastreio = qtd.toString();
+        }
+      });
+    });
+  }
+
 }
