@@ -1,0 +1,6 @@
+enum Finalizado{
+
+  S,
+  N
+
+}
