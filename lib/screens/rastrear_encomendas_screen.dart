@@ -85,7 +85,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                                         builder: (context) => NovoRastreioScreen(),
                                       ),
                                     ).then((novaEncomenda) => {
-                                      inserirNovaEncomendaNaLista(novaEncomenda)
+                                        recarregarLista
                                     });
                                   },
                                 ),
@@ -127,18 +127,19 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
             MaterialPageRoute(
               builder: (context) => NovoRastreioScreen(),
             ),
-          );
+          ).then((novaEncomenda) => {
+            recarregarLista()
+          });
         },
       ),
     );
   }
 
-  inserirNovaEncomendaNaLista(novaEncomenda) {
+  recarregarLista() {
     setState(() {
-      encomendList.add(novaEncomenda);
+
     });
   }
-
 }
 
 class EncomendaItem extends StatelessWidget {
