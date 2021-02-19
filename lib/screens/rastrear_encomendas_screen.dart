@@ -102,14 +102,9 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                   itemBuilder: (context, index) {
                     final Encomenda encomenda = encomendList[index];
                     return EncomendaItem(
-                      encomenda,
-                      onClick: () {
-                        // Navigator.of(context).push(
-                        //   MaterialPageRoute(
-                        //     builder: (context) => TransactionForm(contact),
-                        //   ),
-                        // );
-                      },
+                        encomenda,
+                        () {},
+                        () {},
                     );
                   },
                   itemCount: encomendList.length,
@@ -145,27 +140,28 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
 class EncomendaItem extends StatelessWidget {
   final Encomenda encomenda;
   final Function onClick;
+  final Function onLongPress;
 
-  EncomendaItem(
-    this.encomenda, {
-    @required this.onClick,
-  });
+  EncomendaItem(this.encomenda, this.onClick, this.onLongPress);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        onTap: () => onClick(),
-        title: Text(
-          encomenda.nome,
-          style: TextStyle(
-            fontSize: 24.0,
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: Card(
+        child: ListTile(
+          onTap: () => onClick(),
+          title: Text(
+            encomenda.nome,
+            style: TextStyle(
+              fontSize: 24.0,
+            ),
           ),
-        ),
-        subtitle: Text(
-          encomenda.ultimoStatus,
-          style: TextStyle(
-            fontSize: 16.0,
+          subtitle: Text(
+            encomenda.ultimoStatus,
+            style: TextStyle(
+              fontSize: 16.0,
+            ),
           ),
         ),
       ),
