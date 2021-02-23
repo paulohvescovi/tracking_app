@@ -10,6 +10,8 @@ class EncomendaDao {
       "$codigo_rastreio TEXT, "
       "$cpf TEXT, "
       "$ultimo_status TEXT, "
+      "$data_ultimo_status TEXT, "
+      "$data_finalizado TEXT, "
       "$ultima_atualizacao TEXT, "
       "$finalizado TEXT)";
 
@@ -20,6 +22,8 @@ class EncomendaDao {
   static const codigo_rastreio = "codigo_rastreio";
   static const cpf = "cpf";
   static const ultimo_status = "ultimo_status";
+  static const data_ultimo_status = "data_ultimo_status";
+  static const data_finalizado = "data_finalizado";
   static const finalizado = "finalizado";
   static const ultima_atualizacao = "ultima_atualizacao";
 
@@ -32,9 +36,9 @@ class EncomendaDao {
     if (encomenda.id != null){
       existente = await findById(encomenda.id);
     }
-    if (existente == null){
-      existente = await findByCodigoRastreio(encomenda.codigoRastreio);
-    }
+    // if (existente == null){
+    //   existente = await findByCodigoRastreio(encomenda.codigoRastreio);
+    // }
 
     if (existente == null) {
       int id = await db.insert(tableName, map);
@@ -58,6 +62,8 @@ class EncomendaDao {
     map[ultima_atualizacao] = encomenda.ultimaAtualizacao;
     map[finalizado] = Finalizado.S == encomenda.finalizado ? "S" : "N";
     map[cpf] = encomenda.cpf;
+    map[data_finalizado] = encomenda.dataFinalizado;
+    map[data_ultimo_status] = encomenda.dataUltimoStatus;
     return map;
   }
 
@@ -79,7 +85,7 @@ class EncomendaDao {
     Database db = await getDatabase();
 
     List<dynamic> whereArgs = List();
-    whereArgs.add(codigo_rastreio);
+    whereArgs.add(codigo);
 
     Encomenda m = null;
     var mapList = await db.query(tableName, where: "codigo_rastreio = ?", whereArgs: whereArgs);
@@ -103,6 +109,24 @@ class EncomendaDao {
     return encomendaList;
   }
 
+  Future<List<Encomenda>> findByStatus(Finalizado finalizado) async {
+    final Database db = await getDatabase();
+
+    List<dynamic> whereArgs = List();
+    whereArgs.add(Finalizado.S == finalizado ? "S" : "N");
+
+    final List<Map<String, dynamic>> result = await db.query(tableName, where: "finalizado = ?", whereArgs: whereArgs);
+    List<Encomenda> encomendaList = List();
+
+    result.forEach((row) {
+      encomendaList.add(
+          toEncomenda(row)
+      );
+    });
+
+    return encomendaList;
+  }
+
   Future<int> deleteById(int id) async {
     Database db = await getDatabase();
 
@@ -115,15 +139,18 @@ class EncomendaDao {
   }
 
   Encomenda toEncomenda(Map<String, dynamic> row) {
-    return new Encomenda(
+    Encomenda encomenda = new Encomenda(
         row[id],
         row[nome],
         row[codigo_rastreio],
         row[ultimo_status],
         row[finalizado] == "S" ? Finalizado.S : Finalizado.N,
         row[ultima_atualizacao],
-        row[cpf],
+        row[cpf]
     );
+    encomenda.dataUltimoStatus = row[data_ultimo_status];
+    encomenda.dataFinalizado = row[data_finalizado];
+    return encomenda;
   }
 
 }

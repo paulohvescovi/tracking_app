@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:tracking_app/components/progress_carregando.dart';
+import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/encomenda.dart';
+import 'package:tracking_app/screens/encomenda_detalhes_screen.dart';
 import 'package:tracking_app/screens/novo_rastreio_screen.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
+import 'package:tracking_app/utils/date_utils.dart';
 
 import 'meus_dados_screen.dart';
 
@@ -32,7 +35,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
       ),
       body: FutureBuilder<List<Encomenda>>(
         initialData: encomendList,
-        future: encomendaDao.findAll(),
+        future: encomendaDao.findByStatus(Finalizado.N),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -67,10 +70,10 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                                 ),
                                 Image.asset(
                                   'images/encomendas_vazias.png',
-                                  width: 200,
+                                  width: 300,
                                 ),
                                 Text(
-                                  "Você ainda não cadastrou nenhuma encomenda para rastrear",
+                                  "Você não tem nenhuma encomenda em rastreio no momento",
                                   style: TextStyle(
                                       fontSize: 20.0,
                                       color: Colors.black54
@@ -116,7 +119,27 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                     return EncomendaItem(
                         encomenda,
                         () {
-                          //todo chamar tela de detalhes
+                          progressDialog = ProgressDialog(context,
+                            message:Text("Buscando encomenda"),
+                            title:Text("Aguarde"),
+                            // dismissable: false
+                          );
+                          progressDialog.show();
+
+                          redeSulClientService.buscarEncomendaRedeSul(encomenda, (updated) {
+                            progressDialog.dismiss();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => EncomendaDetalhesScreen(encomenda),
+                              ),
+                            ).then((value) => {
+                              // carregarMeusDados()
+                            });
+                          }, () {
+                            progressDialog.dismiss();
+                            //todo mostrar erro aqui
+                          });
+
                         },
                         () {
                           alertDialog = NAlertDialog(
@@ -166,6 +189,41 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                             progressDialog.dismiss();
                             //todo mostrar erro aqui
                           });
+                        },
+                        (){
+
+                          alertDialog = NAlertDialog(
+                            title: Text("Marcar a encomenda como recebida?"),
+                            content: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Text(encomenda.nome),
+                            ),
+                            actions: [
+                              FlatButton(
+                                child: Text("Sim"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+
+                                  encomenda.finalizado = Finalizado.S;
+                                  encomenda.dataFinalizado = DateUtil.format(new DateTime.now(), DateUtil.PATTERN_REDESUL);
+                                  encomendaDao.save(encomenda).then((value) => {
+                                      setState(() {
+
+                                      })
+                                  });
+
+                                },
+                              ),
+                              FlatButton(
+                                child: Text("Não"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          );
+                          alertDialog.show(context);
+
                         }
                     );
                   },
@@ -206,13 +264,15 @@ class EncomendaItem extends StatelessWidget {
   final Function onClick;
   final Function onLongPress;
   final Function onRefresh;
+  final Function onFinalizar;
 
-  EncomendaItem(this.encomenda, this.onClick, this.onLongPress, this.onRefresh);
+  EncomendaItem(this.encomenda, this.onClick, this.onLongPress, this.onRefresh, this.onFinalizar);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPress: onLongPress,
+      onTap: onClick,
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(8),
@@ -250,7 +310,14 @@ class EncomendaItem extends StatelessWidget {
                         encomenda.ultimoStatus,
                         style: TextStyle(fontSize: 14),
                       ),
-                    ],
+                      Visibility(
+                        visible: Finalizado.N == encomenda.finalizado,
+                        child: FlatButton(
+                            onPressed: onFinalizar,
+                            child: Text("Recebi a encomenda"),
+                        ),
+                      ),
+                  ],
                   ),
               ),
               IconButton(

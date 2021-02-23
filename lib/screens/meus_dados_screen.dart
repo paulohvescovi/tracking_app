@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:tracking_app/components/progress_carregando.dart';
 import 'package:tracking_app/models/meus_dados.dart';
@@ -75,7 +77,10 @@ class _MeusDadosScreenState extends State<MeusDadosScreen> {
                             Padding(padding: EdgeInsets.only(top: 16)),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(100),
-                              child: Image.network("https://i.imgur.com/fVMGRwk.jpg"),
+                              child: Image.asset(
+                                'images/user.png',
+                                width: 150,
+                              ),
                             ),
                             Padding(padding: EdgeInsets.only(top: 8)),
                             TextFormField(
@@ -149,24 +154,24 @@ class _MeusDadosScreenState extends State<MeusDadosScreen> {
                               ],
                             ),
                             Padding(padding: EdgeInsets.only(top: 8)),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width*0.8,
-                                  child: Text("Quer receber por email também essas atualizações nas encomendas?"),
-                                ),
-                                Switch(
-                                  value: _permiteEnviarEmail,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _permiteEnviarEmail = value;
-                                      //todo
-                                    });
-                                  },
-                                )
-                              ],
-                            )
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: [
+                            //     Container(
+                            //       width: MediaQuery.of(context).size.width*0.8,
+                            //       child: Text("Quer receber por email também essas atualizações nas encomendas?"),
+                            //     ),
+                            //     Switch(
+                            //       value: _permiteEnviarEmail,
+                            //       onChanged: (value) {
+                            //         setState(() {
+                            //           _permiteEnviarEmail = value;
+                            //           //todo
+                            //         });
+                            //       },
+                            //     )
+                            //   ],
+                            // )
                           ],
                         ),
                       )

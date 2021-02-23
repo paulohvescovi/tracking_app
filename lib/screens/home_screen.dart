@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:email_launcher/email_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/meus_dados.dart';
+import 'package:tracking_app/screens/encomendas_finalizadas_screen.dart';
 import 'package:tracking_app/screens/meus_dados_screen.dart';
 import 'package:tracking_app/screens/rastrear_encomendas_screen.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_api_config.dart';
@@ -26,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   RedeSulClientService redeSulClientService = new RedeSulClientService();
 
   String _qtdEncomendasEmRastreio = "0";
+  String _qtdEncomendasFinalizadas = "0";
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +42,17 @@ class _HomeScreenState extends State<HomeScreen> {
             UserAccountsDrawerHeader(
               onDetailsPressed: () {
                 Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => MeusDadosScreen(),
+                  ),
+                ).then((value) => {
+                  carregarMeusDados()
+                });
               },
               decoration: BoxDecoration(
-                color: Colors.black,
-                image: const DecorationImage(
-                  image: NetworkImage('https://i.pinimg.com/originals/c4/6f/3c/c46f3cfbff1b198e0276e4d577a4464c.png'),
+                image: new DecorationImage(
+                  image: AssetImage("images/drawer.jpg"),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -81,9 +90,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: Icon(Icons.done),
-              title: Text("Entregas concluidas"),
+              title: Text("Encomendas Recebidas"),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => EncomendasFinalizadasScreen(),
+                  ),
+                ).then((value) => {
+                  // carregarMeusDados()
+                });
               },
             ),
             ListTile(
@@ -91,22 +107,29 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text("Configurações"),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => MeusDadosScreen(),
+                  ),
+                ).then((value) => {
+                  carregarMeusDados()
+                });
               },
             ),
             ListTile(
               leading: Icon(Icons.monetization_on),
-              title: Text("Sugestão ao Desenvolvedor"),
+              title: Text("Sugestão/Problema/Reclamação"),
               onTap: () {
-                Navigator.pop(context);
+                enviarEmailDesenvolvedor();
               },
             ),
-            ListTile(
-              leading: Icon(Icons.star_border),
-              title: Text("Avaliar App"),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.star_border),
+            //   title: Text("Avaliar App"),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //   },
+            // ),
             ListTile(
               leading: Icon(Icons.exit_to_app),
               title: Text("Sair"),
@@ -145,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.all(8.0),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Material(
@@ -178,7 +201,41 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-              )
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 8),
+              ),
+              Material(
+                color: Theme.of(context).primaryColor,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => RastrearEncomendasScreen(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    height: MediaQuery.of(context).size.height / 6,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          _qtdEncomendasFinalizadas,
+                          style: TextStyle(color: Colors.white, fontSize: 40),
+                        ),
+                        Text(
+                          "Encomendas Finalizadas",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -207,19 +264,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void carregarEncomendasEmRastreio() {
-    encomendaDao.findAll().then((data)  {
+    encomendaDao.findByStatus(Finalizado.S).then((data)  {
       setState(() {
-        if (data != null){
-          int qtd = 0;
-          data.forEach((element) {
-            if (element.finalizado == Finalizado.N){
-                qtd++;
-            }
-          });
-          _qtdEncomendasEmRastreio = qtd.toString();
-        }
+        _qtdEncomendasFinalizadas = data.length.toString();
       });
     });
+    encomendaDao.findByStatus(Finalizado.N).then((data)  {
+      setState(() {
+        _qtdEncomendasEmRastreio = data.length.toString();
+      });
+    });
+  }
+
+  void enviarEmailDesenvolvedor() async {
+    Email email = Email(
+        to: ['paulo20091994@gmail.com'],
+        subject: 'Sugestão/Problema/Reclamação TrackinApp',
+        body: 'Olá, escreva aqui sua mensagem'
+    );
+    await EmailLauncher.launch(email);
   }
 
 }

@@ -57,8 +57,10 @@ class RedeSulClientService {
     encomenda.ultimoStatus = ultimoStatusTrackin.ocorrencia;
     encomenda.finalizado = Finalizado.N;
     encomenda.ultimaAtualizacao = ultimoStatusTrackin.descricao;
+    encomenda.dataUltimoStatus = ultimoStatusTrackin.data_hora;
 
     Encomenda encomendaSalva = await encomendaDao.save(encomenda);
+    encomendaSalva.redeSulList = encomendaEncontrada.tracking;
     onSucess(encomendaSalva);
 
   }

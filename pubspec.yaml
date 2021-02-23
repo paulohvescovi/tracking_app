@@ -30,6 +30,7 @@ dependencies:
   select_dialog:
   ndialog: ^3.2.1
   intl: ^0.16.1
+  email_launcher: ^1.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -62,7 +63,9 @@ flutter:
   assets:
     - images/rede_sul.png
     - images/correios.jpg
+    - images/drawer.jpg
     - images/encomendas_vazias.png
+    - images/user.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
