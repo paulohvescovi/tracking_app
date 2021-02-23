@@ -7,14 +7,15 @@ class Encomenda {
   String _codigoRastreio;
   String _ultimoStatus;
   Finalizado _finalizado;
+  String _ultimaAtualizacao;
+  String _cpf;
 
   Encomenda.codigoRastreio(String codigo){
     _codigoRastreio = codigo;
   }
 
   Encomenda(this._id, this._nome, this._codigoRastreio, this._ultimoStatus,
-      this._finalizado);
-
+      this._finalizado, this._ultimaAtualizacao, this._cpf);
 
   Finalizado get finalizado => _finalizado;
 
@@ -44,5 +45,17 @@ class Encomenda {
 
   set id(int value) {
     _id = value;
+  }
+
+  String get ultimaAtualizacao => _ultimaAtualizacao;
+
+  set ultimaAtualizacao(String value) {
+    _ultimaAtualizacao = value;
+  }
+
+  String get cpf => _cpf;
+
+  set cpf(String value) {
+    _cpf = value;
   }
 }

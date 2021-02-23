@@ -175,6 +175,9 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                       ),
                       onPressed: () {
                         if (_empresaSelecionada == EmpresasDisponiveis.REDESUL){
+
+                          encomenda.cpf = _cpfEditTextController.text.isNotEmpty ? _cpfEditTextController.text : meusDados.cpf;
+
                           encomenda.codigoRastreio = _numeroPedidoTextController.text;
                           if (_nomeEncomendaTextController.text.isEmpty){
                             encomenda.nome = "Encomenda Rede Sul";
@@ -187,7 +190,24 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                             // dismissable: false
                           );
                           progressDialog.show();
-                          buscarEncomendaRedeSul(context);
+                          redeSulClientService.buscarEncomendaRedeSul(encomenda, (Encomenda encomendaSalva) {
+                            if (encomendaSalva == null){
+                              progressDialog.dismiss();
+                              NAlertDialog(
+                                title: Text("Oops"),
+                                content: Text("Não encontramos a encomenda com o CPF/CNPJ e Numero do pedido fornecido"),
+                              ).show(context);
+                            } else {
+                              progressDialog.dismiss();
+                              Navigator.pop(context, encomendaSalva);
+                            }
+                          }, () {
+                            progressDialog.dismiss();
+                            NAlertDialog(
+                              title: Text("Erro"),
+                              content: Text("Não encontramos a encomenda com o CPF/CNPJ e Numero do pedido fornecido"),
+                            ).show(context);
+                          });
                         }
                       },
                     ),
@@ -209,39 +229,6 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
             }
           });
     });
-  }
-
-  void buscarEncomendaRedeSul(BuildContext context) async {
-    RedeSulTrack encomendaEncontrada = null;
-
-    try {
-      encomendaEncontrada = await redeSulClientService.findEncomenda(encomenda.codigoRastreio, meusDados.cpf);
-    } catch (erro) {
-      progressDialog.dismiss();
-      NAlertDialog(
-        title: Text("Erro"),
-        content: Text("Não encontramos a encomenda com o CPF/CNPJ e Numero do pedido fornecido"),
-      ).show(context);
-      return;
-    }
-
-    progressDialog.dismiss();
-    if (encomendaEncontrada == null){
-      NAlertDialog(
-        title: Text("Oops"),
-        content: Text("Não encontramos a encomenda com o CPF/CNPJ e Numero do pedido fornecido"),
-      ).show(context);
-    }
-    encomendaEncontrada.tracking.sort((a,b) => b.getDataHoraEfetiva().compareTo(a.getDataHoraEfetiva()));
-    RedeSulTrackDetail ultimoStatusTrackin = encomendaEncontrada.tracking[0];
-
-    encomenda.ultimoStatus = ultimoStatusTrackin.descricao;
-    encomenda.finalizado = Finalizado.N;
-
-    encomendaDao.save(encomenda).then((savedEncomenda) => {
-      Navigator.pop(context, savedEncomenda)
-    });
-
   }
 
 }

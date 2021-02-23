@@ -1,7 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:tracking_app/enums/Finalizado.dart';
+import 'package:tracking_app/models/encomenda.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_api_config.dart';
+import 'package:tracking_app/services/api_services/redesul/models/redesul_track.dart';
+import 'package:tracking_app/services/api_services/redesul/models/redesul_track_detail.dart';
+import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 
 import 'models/redesul_track.dart';
 
@@ -31,17 +37,30 @@ class RedeSulClientService {
     return RedeSulTrack.fromJson(jsonDecode(response.body));
   }
 
-  // Future<RedeSulTrack> save(RedeSulTrack transaction) async {
-  //   final String transactionJson = jsonEncode(transaction.toJson());
-  //
-  //   final Response response = await client.post(baseUrl,
-  //       headers: {
-  //         'Content-type': 'application/json',
-  //         'password': '1000',
-  //       },
-  //       body: transactionJson);
-  //
-  //   return Transaction.fromJson(jsonDecode(response.body));
-  // }
+  void buscarEncomendaRedeSul(Encomenda encomenda, Function onSucess, Function onError) async {
+    EncomendaDao encomendaDao = new EncomendaDao();
+    RedeSulTrack encomendaEncontrada = null;
+
+    try {
+      encomendaEncontrada = await findEncomenda(encomenda.codigoRastreio, encomenda.cpf);
+    } catch (erro) {
+      onError();
+      return;
+    }
+
+    if (encomendaEncontrada == null){
+      onSucess(null);
+    }
+    encomendaEncontrada.tracking.sort((a,b) => b.getDataHoraEfetiva().compareTo(a.getDataHoraEfetiva()));
+    RedeSulTrackDetail ultimoStatusTrackin = encomendaEncontrada.tracking[0];
+
+    encomenda.ultimoStatus = ultimoStatusTrackin.ocorrencia;
+    encomenda.finalizado = Finalizado.N;
+    encomenda.ultimaAtualizacao = ultimoStatusTrackin.descricao;
+
+    Encomenda encomendaSalva = await encomendaDao.save(encomenda);
+    onSucess(encomendaSalva);
+
+  }
 
 }

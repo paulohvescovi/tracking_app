@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:ndialog/ndialog.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/meus_dados.dart';
 import 'package:tracking_app/screens/meus_dados_screen.dart';
@@ -108,7 +111,28 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Icon(Icons.exit_to_app),
               title: Text("Sair"),
               onTap: () {
-                Navigator.pop(context);
+                NAlertDialog alertDialog = NAlertDialog(
+                  title: Text("Atenção"),
+                  content: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text("Deseja sair do APP?"),
+                  ),
+                  actions: [
+                    FlatButton(
+                      child: Text("Sim"),
+                      onPressed: () {
+                        exit(0);
+                      },
+                    ),
+                    FlatButton(
+                      child: Text("Não"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                );
+                alertDialog.show(context);
               },
             ),
           ],

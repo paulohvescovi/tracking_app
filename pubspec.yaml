@@ -62,6 +62,7 @@ flutter:
   assets:
     - images/rede_sul.png
     - images/correios.jpg
+    - images/encomendas_vazias.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
