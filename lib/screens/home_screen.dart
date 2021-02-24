@@ -30,9 +30,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _qtdEncomendasEmRastreio = "0";
   String _qtdEncomendasFinalizadas = "0";
+  bool _primeiraBuscaEncomendasJaFeita = false;
 
   @override
   Widget build(BuildContext context) {
+    if (!_primeiraBuscaEncomendasJaFeita){
+      carregarEncomendasEmRastreio();
+    }
 
     return Scaffold(
       drawer: Drawer(
@@ -315,6 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void carregarEncomendasEmRastreio() {
+    _primeiraBuscaEncomendasJaFeita = true;
     encomendaDao.findByStatus(Finalizado.S).then((data)  {
       setState(() {
         _qtdEncomendasFinalizadas = data.length.toString();
