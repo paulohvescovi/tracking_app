@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="br.com.vescovi.tracking_app">
    <application
-        android:label="tracking_app"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Rastreador - Correios, Rede Sul"
+        android:icon="@mipmap/laucher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
