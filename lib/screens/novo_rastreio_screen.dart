@@ -6,6 +6,7 @@ import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/encomenda.dart';
 import 'package:tracking_app/models/meus_dados.dart';
+import 'package:tracking_app/services/api_services/correios/correios_client_service.dart';
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track.dart';
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track_detail.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
@@ -23,6 +24,7 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
   EncomendaDao encomendaDao = new EncomendaDao();
 
   RedeSulClientService redeSulClientService = new RedeSulClientService();
+  CorreioClientService correioClientService = new CorreioClientService();
 
   EmpresasDisponiveis _empresaSelecionada = null;
   Encomenda encomenda = Encomenda.codigoRastreio("");
@@ -31,6 +33,7 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
   TextEditingController _cpfEditTextController = TextEditingController();
   TextEditingController _numeroPedidoTextController = TextEditingController();
   TextEditingController _nomeEncomendaTextController = TextEditingController();
+  TextEditingController _numeroRastreioCorreioTextController = TextEditingController();
 
   ProgressDialog progressDialog;
 
@@ -47,24 +50,38 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
             padding: EdgeInsets.all(8),
             child: Column(
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'images/rede_sul.png',
+                      width: 150,
+                    ),
+                    Image.asset(
+                      'images/correios.jpg',
+                      width: 150,
+                    ),
+                  ],
+                ),
                 Padding(padding: EdgeInsets.only(top: 8)),
                 Text(
-                  "Selecione empresa da encomenda",
+                  "1º Selecionar empresa de transporte",
                   style: TextStyle(fontSize: 20.0, color: Colors.black87),
                   textAlign: TextAlign.center,
                 ),
                 Padding(padding: EdgeInsets.only(top: 8)),
-                Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    decoration: new BoxDecoration(
-                      border: new Border.all(
-                          color: Theme.of(context).primaryColor, width: 2.0),
-                      borderRadius: new BorderRadius.circular(10.0),
-                    ),
-                    child: InkWell(
-                      customBorder: ContinuousRectangleBorder(),
-                      onTap: () {
+                SizedBox(
+                  width: 230,
+                  height: 60,
+                  child: RaisedButton(
+                      child: Text(
+                        "Selecionar Empresa",
+                        style: TextStyle(
+                            fontSize: 16, color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                      onPressed: () {
                         List<String> list = List();
                         list.add("RedeSul Logistica");
                         list.add("Correios");
@@ -92,20 +109,7 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                             });
                           },
                         );
-                      },
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'images/rede_sul.png',
-                            width: 200,
-                          ),
-                          Image.asset(
-                            'images/correios.jpg',
-                            width: 200,
-                          ),
-                        ],
-                      ),
-                    ),
+                      }
                   ),
                 ),
                 Padding(padding: EdgeInsets.only(top: 16)),
@@ -115,11 +119,24 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                       children: [
                         Text("Empresa Selecionada"),
                         Padding(padding: EdgeInsets.only(top: 8)),
-                        Text(_empresaSelecionada != null
-                            ? _empresaSelecionada.descricao
-                            : ""),
+                        Text(
+                          _empresaSelecionada != null
+                              ? _empresaSelecionada.descricao
+                              : "",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
                       ],
                     )),
+                Padding(padding: EdgeInsets.only(top: 8)),
+                Text(
+                  "2º Informe os dados para rastrear",
+                  style: TextStyle(fontSize: 20.0, color: Colors.black87),
+                  textAlign: TextAlign.center,
+                ),
                 Padding(padding: EdgeInsets.only(top: 8)),
                 Visibility(
                   child: TextField(
@@ -161,6 +178,20 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                     ),
                   ),
                 ),
+                Padding(padding: EdgeInsets.only(top: 8)),
+                Visibility(
+                  visible: EmpresasDisponiveis.CORREIOS == _empresaSelecionada,
+                  child: TextField(
+                    controller: _numeroRastreioCorreioTextController,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person_outline_sharp),
+                      hintText: 'QD592017502BR',
+                      labelText: 'Código Rastreio',
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
                 Padding(padding: EdgeInsets.only(top: 16)),
                 Visibility(
                   visible: _empresaSelecionada != null,
@@ -196,6 +227,14 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                               NAlertDialog(
                                 title: Text("Oops"),
                                 content: Text("Não encontramos a encomenda com o CPF/CNPJ e Numero do pedido fornecido"),
+                                actions: [
+                                  FlatButton(
+                                    child: Text("OK"),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ],
                               ).show(context);
                             } else {
                               progressDialog.dismiss();
@@ -208,6 +247,67 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                               content: Text("Não encontramos a encomenda com o CPF/CNPJ e Numero do pedido fornecido"),
                             ).show(context);
                           });
+                        } else {
+
+                          if (_numeroRastreioCorreioTextController.text.isEmpty){
+                            NAlertDialog alertDialog = NAlertDialog(
+                              title: Text("Ops"),
+                              content: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Text("Informe o codigo de rastreio"),
+                              ),
+                              actions: [
+                                FlatButton(
+                                  child: Text("OK"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
+                            );
+                            alertDialog.show(context);
+                            return;
+                          }
+
+                          encomenda.codigoRastreio = _numeroRastreioCorreioTextController.text;
+                          if (_nomeEncomendaTextController.text.isEmpty){
+                            encomenda.nome = "Encomenda Correios";
+                          } else {
+                            encomenda.nome = _nomeEncomendaTextController.text;
+                          }
+                          progressDialog = ProgressDialog(context,
+                            message:Text("Buscando dados da encomenda"),
+                            title:Text("Aguarde"),
+                            // dismissable: false
+                          );
+                          progressDialog.show();
+                          correioClientService.buscarEncomendaCorreios(encomenda, (Encomenda encomendaSalva) {
+                            if (encomendaSalva == null){
+                              progressDialog.dismiss();
+                              NAlertDialog(
+                                title: Text("Oops"),
+                                content: Text("Não encontramos a encomenda codigo de rastreio informado"),
+                                actions: [
+                                  FlatButton(
+                                    child: Text("OK"),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ],
+                              ).show(context);
+                            } else {
+                              progressDialog.dismiss();
+                              Navigator.pop(context, encomendaSalva);
+                            }
+                          }, () {
+                            progressDialog.dismiss();
+                            NAlertDialog(
+                              title: Text("Erro"),
+                              content: Text("Deu um problema ao buscar a encomenda, avise o desenvolvedor pelo menu sugestão/reclamação"),
+                            ).show(context);
+                          });
+
                         }
                       },
                     ),

@@ -32,8 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-   carregarMeusDados();
-   carregarEncomendasEmRastreio();
+
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -85,7 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(
                     builder: (context) => RastrearEncomendasScreen(),
                   ),
-                );
+                ).then((value) => {
+                  carregarEncomendasEmRastreio()
+                });
               },
             ),
             ListTile(
@@ -98,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context) => EncomendasFinalizadasScreen(),
                   ),
                 ).then((value) => {
-                  // carregarMeusDados()
+                  carregarEncomendasEmRastreio()
                 });
               },
             ),
@@ -180,7 +181,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       MaterialPageRoute(
                         builder: (context) => RastrearEncomendasScreen(),
                       ),
-                    );
+                    ).then((value) => {
+                      carregarEncomendasEmRastreio()
+                    });
                   },
                   child: Container(
                     padding: EdgeInsets.all(8.0),
@@ -212,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => RastrearEncomendasScreen(),
+                        builder: (context) => EncomendasFinalizadasScreen(),
                       ),
                     );
                   },
@@ -248,7 +251,9 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(
               builder: (context) => NovoRastreioScreen(),
             ),
-          );
+          ).then((value) => {
+            carregarEncomendasEmRastreio()
+          });
         },
       ),
     );

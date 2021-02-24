@@ -1,8 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:tracking_app/models/encomenda.dart';
-import 'package:tracking_app/services/api_services/redesul/models/redesul_track_detail.dart';
-import 'package:tracking_app/utils/date_utils.dart';
+import 'package:tracking_app/models/encomenda_detail.dart';
 
 class EncomendaDetalhesScreen extends StatefulWidget {
 
@@ -29,15 +28,15 @@ class _EncomendaDetalhesScreenState extends State<EncomendaDetalhesScreen> {
       body: Container(
         child: ListView.builder(
           itemBuilder: (context, index) {
-            RedeSulTrackDetail detail = encomenda.redeSulList[index];
+            EncomendaDetail detail = encomenda.details[index];
             return Card(
               child: ListTile(
-                title: Text(detail.ocorrencia + " " + DateUtil.format(DateUtil.getDateTime(detail.data_hora, DateUtil.PATTERN_REDESUL), DateUtil.PATTERN_DEFAULT)),
+                title: Text(detail.ocorrencia + " " + detail.data_hora),
                 subtitle: Text(detail.descricao),
               ),
             );
           },
-          itemCount: encomenda.redeSulList.length,
+          itemCount: encomenda.details.length,
         ),
       ),
     );

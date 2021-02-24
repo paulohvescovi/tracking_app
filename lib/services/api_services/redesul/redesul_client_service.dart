@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/encomenda.dart';
+import 'package:tracking_app/models/encomenda_detail.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_api_config.dart';
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track.dart';
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track_detail.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
+import 'package:tracking_app/utils/date_utils.dart';
 
 import 'models/redesul_track.dart';
 
@@ -50,6 +53,7 @@ class RedeSulClientService {
 
     if (encomendaEncontrada == null){
       onSucess(null);
+      return;
     }
     encomendaEncontrada.tracking.sort((a,b) => b.getDataHoraEfetiva().compareTo(a.getDataHoraEfetiva()));
     RedeSulTrackDetail ultimoStatusTrackin = encomendaEncontrada.tracking[0];
@@ -58,9 +62,31 @@ class RedeSulClientService {
     encomenda.finalizado = Finalizado.N;
     encomenda.ultimaAtualizacao = ultimoStatusTrackin.descricao;
     encomenda.dataUltimoStatus = ultimoStatusTrackin.data_hora;
+    encomenda.empresa = EmpresasDisponiveis.REDESUL;
 
     Encomenda encomendaSalva = await encomendaDao.save(encomenda);
-    encomendaSalva.redeSulList = encomendaEncontrada.tracking;
+
+    encomendaEncontrada.tracking.forEach((trackin) {
+      EncomendaDetail encomendaDetail = new EncomendaDetail();
+
+      String dataString = DateUtil.format(trackin.getDataHoraEfetiva(), DateUtil.PATTERN_DATETIME);
+
+      encomendaDetail.ocorrencia = trackin.ocorrencia;
+      encomendaDetail.cidade = trackin.cidade;
+      encomendaDetail.data_hora = dataString;
+      encomendaDetail.descricao = trackin.descricao;
+
+      if (trackin.ocorrencia.contains("ENTREGUE")){
+        encomendaDetail.tipo = "Concluido";
+      } else if (trackin.ocorrencia.contains("SAIDA PARA ENTREGA")) {
+        encomendaDetail.tipo = "Quaje chegando";
+      } else {
+        encomendaDetail.tipo = "Em Transporte";
+      }
+
+      encomenda.details.add(encomendaDetail);
+    });
+
     onSucess(encomendaSalva);
 
   }

@@ -1,4 +1,6 @@
+import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
+import 'package:tracking_app/models/encomenda_detail.dart';
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track.dart';
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track_detail.dart';
 
@@ -9,11 +11,12 @@ class Encomenda {
   String _codigoRastreio;
   String _ultimoStatus;
   Finalizado _finalizado;
+  EmpresasDisponiveis _empresa;
   String _ultimaAtualizacao;
   String _cpf;
   String _dataFinalizado;
   String _dataUltimoStatus;
-  List<RedeSulTrackDetail> _redeSulList = List();
+  List<EncomendaDetail> _details = List();
 
   Encomenda.codigoRastreio(String codigo){
     _codigoRastreio = codigo;
@@ -64,12 +67,6 @@ class Encomenda {
     _cpf = value;
   }
 
-  List<RedeSulTrackDetail> get redeSulList => _redeSulList;
-
-  set redeSulList(List<RedeSulTrackDetail> value) {
-    _redeSulList = value;
-  }
-
   String get dataUltimoStatus => _dataUltimoStatus;
 
   set dataUltimoStatus(String value) {
@@ -80,5 +77,17 @@ class Encomenda {
 
   set dataFinalizado(String value) {
     _dataFinalizado = value;
+  }
+
+  List<EncomendaDetail> get details => _details;
+
+  set details(List<EncomendaDetail> value) {
+    _details = value;
+  }
+
+  EmpresasDisponiveis get empresa => _empresa;
+
+  set empresa(EmpresasDisponiveis value) {
+    _empresa = value;
   }
 }

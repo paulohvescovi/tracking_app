@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:tracking_app/components/progress_carregando.dart';
+import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/encomenda.dart';
 import 'package:tracking_app/screens/encomenda_detalhes_screen.dart';
 import 'package:tracking_app/screens/novo_rastreio_screen.dart';
+import 'package:tracking_app/services/api_services/correios/correios_client_service.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/utils/date_utils.dart';
@@ -21,7 +23,8 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
   
   EncomendaDao encomendaDao = new EncomendaDao();
   RedeSulClientService redeSulClientService = new RedeSulClientService();
-  
+  CorreioClientService correioClientService = new CorreioClientService();
+
   List<Encomenda> encomendList = List();
   ProgressDialog progressDialog;
   NAlertDialog alertDialog;
@@ -31,7 +34,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Rastrear"),
+        title: Text("Encomendas rastreando"),
       ),
       body: FutureBuilder<List<Encomenda>>(
         initialData: encomendList,
@@ -126,18 +129,17 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                           );
                           progressDialog.show();
 
-                          redeSulClientService.buscarEncomendaRedeSul(encomenda, (updated) {
-                            progressDialog.dismiss();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => EncomendaDetalhesScreen(encomenda),
-                              ),
-                            ).then((value) => {
-                              // carregarMeusDados()
-                            });
-                          }, () {
-                            progressDialog.dismiss();
-                            //todo mostrar erro aqui
+                          buscarEncomenda(encomenda, (encomendaBuscada) {
+                            if (encomendaBuscada != null){
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => EncomendaDetalhesScreen(encomendaBuscada),
+                                ),
+                              ).then((value) => {
+                              });
+                            } else {
+                              //show mensagem erro aqui
+                            }
                           });
 
                         },
@@ -178,17 +180,19 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                           );
                           progressDialog.show();
 
-                          redeSulClientService.buscarEncomendaRedeSul(encomenda, (updated) {
-                            progressDialog.dismiss();
-                            setState(() {
-                              int indexOf = encomendList.indexOf(encomenda);
-                              encomendList.remove(encomenda);
-                              encomendList.insert(indexOf, updated);
-                            });
-                          }, () {
-                            progressDialog.dismiss();
-                            //todo mostrar erro aqui
+
+                          buscarEncomenda(encomenda, (encomendaBuscada) {
+                            if (encomendaBuscada != null){
+                              setState(() {
+                                int indexOf = encomendList.indexOf(encomenda);
+                                encomendList.remove(encomenda);
+                                encomendList.insert(indexOf, encomendaBuscada);
+                              });
+                            } else {
+                              //show mensagem erro aqui
+                            }
                           });
+
                         },
                         (){
 
@@ -205,7 +209,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                                   Navigator.of(context).pop();
 
                                   encomenda.finalizado = Finalizado.S;
-                                  encomenda.dataFinalizado = DateUtil.format(new DateTime.now(), DateUtil.PATTERN_REDESUL);
+                                  encomenda.dataFinalizado = DateUtil.format(new DateTime.now(), DateUtil.PATTERN_DATETIME);
                                   encomendaDao.save(encomenda).then((value) => {
                                       setState(() {
 
@@ -257,6 +261,26 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
       }
     });
   }
+
+  void buscarEncomenda(Encomenda encomenda, Function onBuscada){
+    if (EmpresasDisponiveis.REDESUL == encomenda.empresa){
+      redeSulClientService.buscarEncomendaRedeSul(encomenda, (updated) {
+        progressDialog.dismiss();
+        onBuscada(updated);
+      }, () {
+        progressDialog.dismiss();
+        onBuscada(null);
+      });
+    } else if (EmpresasDisponiveis.CORREIOS == encomenda.empresa){
+      correioClientService.buscarEncomendaCorreios(encomenda, (updated) {
+        progressDialog.dismiss();
+        onBuscada(updated);
+      }, () {
+        progressDialog.dismiss();
+        onBuscada(null);
+      });
+    }
+  }
 }
 
 class EncomendaItem extends StatelessWidget {
@@ -284,11 +308,19 @@ class EncomendaItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      new Text(
-                        encomenda.nome,
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 4)),
+                    Row(
+                      children: [
+                        new Text(
+                          encomenda.nome,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Image.asset(
+                          imagemDisponivel(encomenda.empresa),
+                          width: 80,
+                        )
+                      ],
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 4)),
                       new Text(
                         "Cod Rastreio " + encomenda.codigoRastreio,
                         style: TextStyle(fontSize: 14),
@@ -332,5 +364,15 @@ class EncomendaItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String imagemDisponivel(EmpresasDisponiveis empresa) {
+    if (EmpresasDisponiveis.REDESUL == empresa){
+      return 'images/rede_sul.png';
+    }
+    if (EmpresasDisponiveis.CORREIOS == empresa){
+      return 'images/correios.jpg';
+    }
+    return '';
   }
 }

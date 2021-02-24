@@ -1,4 +1,6 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/services/database_services/app_database.dart';
 import 'package:tracking_app/models/encomenda.dart';
@@ -11,6 +13,7 @@ class EncomendaDao {
       "$cpf TEXT, "
       "$ultimo_status TEXT, "
       "$data_ultimo_status TEXT, "
+      "$empresa TEXT, "
       "$data_finalizado TEXT, "
       "$ultima_atualizacao TEXT, "
       "$finalizado TEXT)";
@@ -23,6 +26,7 @@ class EncomendaDao {
   static const cpf = "cpf";
   static const ultimo_status = "ultimo_status";
   static const data_ultimo_status = "data_ultimo_status";
+  static const empresa = "empresa";
   static const data_finalizado = "data_finalizado";
   static const finalizado = "finalizado";
   static const ultima_atualizacao = "ultima_atualizacao";
@@ -64,6 +68,8 @@ class EncomendaDao {
     map[cpf] = encomenda.cpf;
     map[data_finalizado] = encomenda.dataFinalizado;
     map[data_ultimo_status] = encomenda.dataUltimoStatus;
+    map[empresa] = EnumToString.convertToString(encomenda.empresa);
+
     return map;
   }
 
@@ -150,6 +156,7 @@ class EncomendaDao {
     );
     encomenda.dataUltimoStatus = row[data_ultimo_status];
     encomenda.dataFinalizado = row[data_finalizado];
+    encomenda.empresa = EnumToString.fromString(EmpresasDisponiveis.values, row[empresa]);
     return encomenda;
   }
 
