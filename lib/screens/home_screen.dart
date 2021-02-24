@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/meus_dados.dart';
+import 'package:tracking_app/screens/donation_screen.dart';
 import 'package:tracking_app/screens/encomendas_finalizadas_screen.dart';
 import 'package:tracking_app/screens/meus_dados_screen.dart';
 import 'package:tracking_app/screens/rastrear_encomendas_screen.dart';
@@ -118,20 +119,26 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.monetization_on),
+              leading: Icon(Icons.bug_report),
               title: Text("Sugestão/Problema/Reclamação"),
               onTap: () {
                   Navigator.pop(context);
                   enviarEmailDesenvolvedor(context);
               },
             ),
-            // ListTile(
-            //   leading: Icon(Icons.star_border),
-            //   title: Text("Avaliar App"),
-            //   onTap: () {
-            //     Navigator.pop(context);
-            //   },
-            // ),
+            ListTile(
+              leading: Icon(Icons.monetization_on),
+              title: Text("Doação"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DonationScreen(),
+                  ),
+                ).then((value) => {
+                });
+              },
+            ),
             ListTile(
               leading: Icon(Icons.exit_to_app),
               title: Text("Sair"),
@@ -239,6 +246,44 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 16),
+              ),
+              Text("Empresas já adicionadas..."),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'images/rede_sul.png',
+                    width: 150,
+                  ),
+                  Image.asset(
+                    'images/correios.jpg',
+                    width: 150,
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 8),
+              ),
+              Text("Em breve será adicionado..."),
+              Padding(padding: EdgeInsets.all(8)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'images/total_express.jpg',
+                    width: 120,
+                  ),
+                  Padding(padding: EdgeInsets.all(8)),
+                  Image.asset(
+                    'images/sequoia.png',
+                    width: 100,
+                  ),
+                ],
               ),
             ],
           ),

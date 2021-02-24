@@ -68,6 +68,10 @@ flutter:
     - images/drawer.jpg
     - images/encomendas_vazias.png
     - images/user.png
+    - images/sequoia.png
+    - images/total_express.jpg
+    - images/picpay.png
+    - images/pix.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
