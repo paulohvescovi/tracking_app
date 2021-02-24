@@ -120,7 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Icon(Icons.monetization_on),
               title: Text("Sugestão/Problema/Reclamação"),
               onTap: () {
-                enviarEmailDesenvolvedor();
+                  Navigator.pop(context);
+                  enviarEmailDesenvolvedor(context);
               },
             ),
             // ListTile(
@@ -276,13 +277,39 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void enviarEmailDesenvolvedor() async {
+  void enviarEmailDesenvolvedor(BuildContext context) async {
     Email email = Email(
         to: ['paulo20091994@gmail.com'],
         subject: 'Sugestão/Problema/Reclamação TrackinApp',
         body: 'Olá, escreva aqui sua mensagem'
     );
-    await EmailLauncher.launch(email);
+    try {
+      await EmailLauncher.launch(email);
+    } catch (erro) {
+      String mensagem = "";
+      if (erro.toString().contains("mail configuration")){
+        mensagem = "Sem email configurado ou aplicativo de email, verifique se seu email esta logado na conta google ou se existe algum app de email instalado";
+      } else {
+        mensagem = "Ops, ocorreu um problema, mande um email para paulo20091994@gmail.com informando sua sugestão, problema ou reclamação";
+      }
+      NAlertDialog alertDialog = NAlertDialog(
+        title: Text("Envio de Email"),
+        content: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text(mensagem),
+        ),
+        actions: [
+          FlatButton(
+            child: Text("OK"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      );
+      alertDialog.show(context);
+    }
+
   }
 
 }
