@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:tracking_app/components/custom_switch.dart';
 import 'package:tracking_app/components/custom_textfield.dart';
 import 'package:tracking_app/components/progress_carregando.dart';
 import 'package:tracking_app/models/meus_dados.dart';
@@ -15,6 +16,7 @@ class _MeusDadosScreenState extends State<MeusDadosScreen> {
 
   bool _permiteEnviarNotificacoes = true;
   bool _permiteEnviarEmail = true;
+  bool _jaCarregouDadosDoUsuario = false;
 
   TextEditingController _nomeEditController = new TextEditingController();
   TextEditingController _emailEditController = new TextEditingController();
@@ -61,8 +63,12 @@ class _MeusDadosScreenState extends State<MeusDadosScreen> {
                 meusDados.nome = "";
                 meusDados.email = "";
               }
-              _permiteEnviarNotificacoes = meusDados.enviarNotificacoes;
-              _permiteEnviarEmail = meusDados.enviarEmail;
+              if (!_jaCarregouDadosDoUsuario){
+                _permiteEnviarNotificacoes = meusDados.enviarNotificacoes;
+                _permiteEnviarEmail = meusDados.enviarEmail;
+                _jaCarregouDadosDoUsuario = true;
+              }
+
               _nomeEditController.text = meusDados.nome;
               _emailEditController.text = meusDados.email;
               _cpfEditController.text = meusDados.cpf;
@@ -104,23 +110,15 @@ class _MeusDadosScreenState extends State<MeusDadosScreen> {
                               controller: _cpfEditController,
                             ),
                             Padding(padding: EdgeInsets.only(top: 8)),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width*0.8,
-                                  child: Text("Deseja que o app faça buscas periodicas e te avise quanto tiver atualizações em suas encomendas?"),
-                                ),
-                                Switch(
-                                  value: _permiteEnviarNotificacoes,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _permiteEnviarNotificacoes = value;
-                                      //todo on change
-                                    });
-                                  },
-                                )
-                              ],
+                            CustomSwitch(
+                              label: "Deseja que o app faça buscas periodicas e te avise quanto tiver atualizações em suas encomendas?",
+                              value: _permiteEnviarNotificacoes,
+                              onchange: (newValue) {
+                                setState(() {
+                                  _permiteEnviarNotificacoes = newValue;
+                                  //todo on change
+                                });
+                              },
                             ),
                             Padding(padding: EdgeInsets.only(top: 8)),
                             // Row(
