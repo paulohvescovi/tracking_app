@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:tracking_app/components/custom_textfield.dart';
 import 'package:tracking_app/components/progress_carregando.dart';
 import 'package:tracking_app/models/meus_dados.dart';
 import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
@@ -83,56 +84,24 @@ class _MeusDadosScreenState extends State<MeusDadosScreen> {
                               ),
                             ),
                             Padding(padding: EdgeInsets.only(top: 8)),
-                            TextFormField(
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'Insira seu nome acima';
-                                }
-                                return null;
-                              },
+                            CustomTextField(
+                              hintText: 'Informe seu Nome',
+                              labelText: 'Nome',
                               controller: _nomeEditController,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.person_outline_sharp),
-                                hintText: 'Informe seu Nome',
-                                labelText:'Nome',
-                                border: const OutlineInputBorder(
-                                ),
-                              ),
                             ),
                             Padding(padding: EdgeInsets.only(top: 8)),
-                            TextFormField(
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'Insira seu email acima';
-                                }
-                                return null;
-                              },
+                            CustomTextField(
+                              hintText: 'Informe seu email acima',
+                              labelText: "Email",
                               controller: _emailEditController,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.person_outline_sharp),
-                                hintText: 'Informe seu email acima',
-                                labelText:'Email',
-                                border: const OutlineInputBorder(
-
-                                ),
-                              ),
                             ),
                             Padding(padding: EdgeInsets.only(top: 24)),
                             Text("Algumas encomendas será necessário o CPF/CNPJ para rastreio, caso voce queira poupar tempo futuramente, pode informa-lo abaixo"),
                             Padding(padding: EdgeInsets.only(top: 8)),
-                            TextFormField(
+                            CustomTextField(
+                              hintText: 'CPF/CNPJ',
+                              labelText: "CPF/CNPJ",
                               controller: _cpfEditController,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.person_outline_sharp),
-                                hintText: 'CPF/CNPJ',
-                                labelText:'CPF/CNPJ',
-                                border: const OutlineInputBorder(
-
-                                ),
-                              ),
                             ),
                             Padding(padding: EdgeInsets.only(top: 8)),
                             Row(
