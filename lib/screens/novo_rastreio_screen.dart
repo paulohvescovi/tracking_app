@@ -10,6 +10,7 @@ import 'package:tracking_app/services/api_services/correios/correios_client_serv
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track.dart';
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track_detail.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
+import 'package:tracking_app/services/api_services/sequoia/sequoia_client_service.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
 import 'package:tracking_app/utils/date_utils.dart';
@@ -25,6 +26,7 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
 
   RedeSulClientService redeSulClientService = new RedeSulClientService();
   CorreioClientService correioClientService = new CorreioClientService();
+  SequioaClientService sequoiaClientService = new SequioaClientService();
 
   EmpresasDisponiveis _empresaSelecionada = null;
   Encomenda encomenda = Encomenda.codigoRastreio("");
@@ -247,7 +249,7 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                               content: Text("Não encontramos a encomenda com o CPF/CNPJ e Numero do pedido fornecido"),
                             ).show(context);
                           });
-                        } else {
+                        } else if (_empresaSelecionada == EmpresasDisponiveis.CORREIOS) {
 
                           if (_numeroRastreioCorreioTextController.text.isEmpty){
                             NAlertDialog alertDialog = NAlertDialog(
@@ -307,6 +309,8 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                               content: Text("Deu um problema ao buscar a encomenda, avise o desenvolvedor pelo menu sugestão/reclamação"),
                             ).show(context);
                           });
+
+                        } else if (_empresaSelecionada == EmpresasDisponiveis.SEQUOIA){
 
                         }
                       },

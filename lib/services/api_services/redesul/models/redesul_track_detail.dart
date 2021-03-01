@@ -1,4 +1,3 @@
-
 import 'package:tracking_app/utils/date_utils.dart';
 
 class RedeSulTrackDetail {

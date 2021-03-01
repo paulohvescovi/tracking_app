@@ -1,7 +1,8 @@
 enum EmpresasDisponiveis {
 
   REDESUL,
-  CORREIOS
+  CORREIOS,
+  SEQUOIA
 
 }
 
@@ -14,6 +15,8 @@ extension EmpresasDisponiveisDescricao  on EmpresasDisponiveis {
         return "RedeSul Logistica";
       case EmpresasDisponiveis.CORREIOS:
         return "Correios";
+      case EmpresasDisponiveis.SEQUOIA:
+        return "Sequoia";
     }
   }
 
