@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:path/path.dart';
 import 'package:select_dialog/select_dialog.dart';
+import 'package:tracking_app/components/button_grande.dart';
 import 'package:tracking_app/components/text_20.dart';
 import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
@@ -61,25 +62,16 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                 Padding(padding: EdgeInsets.only(top: 8)),
                 Text20("1º Selecionar empresa de transporte"),
                 Padding(padding: EdgeInsets.only(top: 8)),
-                SizedBox(
-                  width: 230,
-                  height: 60,
-                  child: RaisedButton(
-                      child: Text(
-                        "Selecionar Empresa",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                      onPressed: () {
-                        DialogUtils.select(context, "Selecione a Empresa",
-                            obtemOptionsEmpresasDisponiveis(),
-                            (String selected) {
-                          setState(() {
-                            _empresaSelecionada =
-                                obtemEmpresaSelecionada(selected);
-                          });
-                        });
-                      }),
+                ButtonGrande(
+                  "Selecionar Empresa",
+                  onPressed: () {
+                    DialogUtils.select(context, "Selecione a Empresa",
+                        obtemOptionsEmpresasDisponiveis(), (String selected) {
+                      setState(() {
+                        _empresaSelecionada = obtemEmpresaSelecionada(selected);
+                      });
+                    });
+                  },
                 ),
                 Padding(padding: EdgeInsets.only(top: 16)),
                 Visibility(
@@ -161,30 +153,18 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                   ),
                 ),
                 Padding(padding: EdgeInsets.only(top: 16)),
-                Visibility(
-                  visible: _empresaSelecionada != null,
-                  child: SizedBox(
-                    width: 230,
-                    height: 60,
-                    child: RaisedButton(
-                      child: Text(
-                        "Buscar encomenda...",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                      onPressed: () {
-                        if (_empresaSelecionada ==
-                            EmpresasDisponiveis.REDESUL) {
-                          buscarDadosRedeSul(context);
-                        } else if (_empresaSelecionada ==
-                            EmpresasDisponiveis.CORREIOS) {
-                          buscarDadosCorreios(context);
-                        } else if (_empresaSelecionada ==
-                            EmpresasDisponiveis.SEQUOIA) {}
-                      },
-                    ),
-                  ),
-                )
+                ButtonGrande(
+                  "Buscar encomenda...",
+                  onPressed: () {
+                    if (_empresaSelecionada == EmpresasDisponiveis.REDESUL) {
+                      buscarDadosRedeSul(context);
+                    } else if (_empresaSelecionada ==
+                        EmpresasDisponiveis.CORREIOS) {
+                      buscarDadosCorreios(context);
+                    } else if (_empresaSelecionada ==
+                        EmpresasDisponiveis.SEQUOIA) {}
+                  },
+                ),
               ],
             ),
           )
