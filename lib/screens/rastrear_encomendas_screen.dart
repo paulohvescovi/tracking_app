@@ -5,7 +5,7 @@ import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/encomenda.dart';
 import 'package:tracking_app/screens/encomenda_detalhes_screen.dart';
-import 'package:tracking_app/screens/novo_rastreio_screen.dart';
+import 'package:tracking_app/screens/novo_rastreio/novo_rastreio_screen.dart';
 import 'package:tracking_app/services/api_services/correios/correios_client_service.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
@@ -20,7 +20,6 @@ class RastrearEncomendasScreen extends StatefulWidget {
 }
 
 class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
-  
   EncomendaDao encomendaDao = new EncomendaDao();
   RedeSulClientService redeSulClientService = new RedeSulClientService();
   CorreioClientService correioClientService = new CorreioClientService();
@@ -31,7 +30,6 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Encomendas rastreando"),
@@ -49,7 +47,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
             case ConnectionState.active:
               break;
             case ConnectionState.done:
-               encomendList = snapshot.data;
+              encomendList = snapshot.data;
 
               if (encomendList.isEmpty) {
                 return ListView(
@@ -66,9 +64,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                                 Text(
                                   "Nenhuma Encomenda",
                                   style: TextStyle(
-                                      fontSize: 24.0,
-                                      color: Colors.black54
-                                  ),
+                                      fontSize: 24.0, color: Colors.black54),
                                   textAlign: TextAlign.center,
                                 ),
                                 Image.asset(
@@ -78,9 +74,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                                 Text(
                                   "Você não tem nenhuma encomenda em rastreio no momento",
                                   style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.black54
-                                  ),
+                                      fontSize: 20.0, color: Colors.black54),
                                   textAlign: TextAlign.center,
                                 ),
                                 Padding(
@@ -96,13 +90,16 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                                         textAlign: TextAlign.center,
                                       ),
                                       onPressed: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => NovoRastreioScreen(),
-                                          ),
-                                        ).then((novaEncomenda) => {
-                                          recarregarLista(novaEncomenda)
-                                        });
+                                        Navigator.of(context)
+                                            .push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    NovoRastreioScreen(),
+                                              ),
+                                            )
+                                            .then((novaEncomenda) => {
+                                                  recarregarLista(novaEncomenda)
+                                                });
                                       },
                                     ),
                                   ),
@@ -119,117 +116,109 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
                 return ListView.builder(
                   itemBuilder: (context, index) {
                     final Encomenda encomenda = encomendList[index];
-                    return EncomendaItem(
-                        encomenda,
-                        () {
-                          progressDialog = ProgressDialog(context,
-                            message:Text("Buscando encomenda"),
-                            title:Text("Aguarde"),
-                            // dismissable: false
-                          );
-                          progressDialog.show();
+                    return EncomendaItem(encomenda, () {
+                      progressDialog = ProgressDialog(
+                        context,
+                        message: Text("Buscando encomenda"),
+                        title: Text("Aguarde"),
+                        // dismissable: false
+                      );
+                      progressDialog.show();
 
-                          buscarEncomenda(encomenda, (encomendaBuscada) {
-                            if (encomendaBuscada != null){
-                              Navigator.of(context).push(
+                      buscarEncomenda(encomenda, (encomendaBuscada) {
+                        if (encomendaBuscada != null) {
+                          Navigator.of(context)
+                              .push(
                                 MaterialPageRoute(
-                                  builder: (context) => EncomendaDetalhesScreen(encomendaBuscada),
+                                  builder: (context) =>
+                                      EncomendaDetalhesScreen(encomendaBuscada),
                                 ),
-                              ).then((value) => {
-                              });
-                            } else {
-                              //show mensagem erro aqui
-                            }
-                          });
-
-                        },
-                        () {
-                          alertDialog = NAlertDialog(
-                            title: Text("Deletar essa encomenda?"),
-                            content: Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Text(encomenda.nome),
-                            ),
-                            actions: [
-                              FlatButton(
-                                child: Text("Sim"),
-                                onPressed: () {
-                                  encomendaDao.deleteById(encomenda.id);
-                                  Navigator.of(context).pop();
-                                  setState(() {
-                                    int indexOf = encomendList.indexOf(encomenda);
-                                    encomendList.remove(encomenda);
-                                  });
-                                },
-                              ),
-                              FlatButton(
-                                child: Text("Não"),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
                               )
-                            ],
-                          );
-                          alertDialog.show(context);
-                        },
-                        (Encomenda encomendaRefresh){
-                          progressDialog = ProgressDialog(context,
-                            message:Text("Atualizando encomenda"),
-                            title:Text("Aguarde"),
-                            // dismissable: false
-                          );
-                          progressDialog.show();
-
-
-                          buscarEncomenda(encomenda, (encomendaBuscada) {
-                            if (encomendaBuscada != null){
+                              .then((value) => {});
+                        } else {
+                          //show mensagem erro aqui
+                        }
+                      });
+                    }, () {
+                      alertDialog = NAlertDialog(
+                        title: Text("Deletar essa encomenda?"),
+                        content: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(encomenda.nome),
+                        ),
+                        actions: [
+                          FlatButton(
+                            child: Text("Sim"),
+                            onPressed: () {
+                              encomendaDao.deleteById(encomenda.id);
+                              Navigator.of(context).pop();
                               setState(() {
                                 int indexOf = encomendList.indexOf(encomenda);
                                 encomendList.remove(encomenda);
-                                encomendList.insert(indexOf, encomendaBuscada);
                               });
-                            } else {
-                              //show mensagem erro aqui
-                            }
+                            },
+                          ),
+                          FlatButton(
+                            child: Text("Não"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      );
+                      alertDialog.show(context);
+                    }, (Encomenda encomendaRefresh) {
+                      progressDialog = ProgressDialog(
+                        context,
+                        message: Text("Atualizando encomenda"),
+                        title: Text("Aguarde"),
+                        // dismissable: false
+                      );
+                      progressDialog.show();
+
+                      buscarEncomenda(encomenda, (encomendaBuscada) {
+                        if (encomendaBuscada != null) {
+                          setState(() {
+                            int indexOf = encomendList.indexOf(encomenda);
+                            encomendList.remove(encomenda);
+                            encomendList.insert(indexOf, encomendaBuscada);
                           });
-
-                        },
-                        (){
-
-                          alertDialog = NAlertDialog(
-                            title: Text("Marcar a encomenda como recebida?"),
-                            content: Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Text(encomenda.nome),
-                            ),
-                            actions: [
-                              FlatButton(
-                                child: Text("Sim"),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-
-                                  encomenda.finalizado = Finalizado.S;
-                                  encomenda.dataFinalizado = DateUtil.format(new DateTime.now(), DateUtil.PATTERN_DATETIME);
-                                  encomendaDao.save(encomenda).then((value) => {
-                                      setState(() {
-
-                                      })
-                                  });
-
-                                },
-                              ),
-                              FlatButton(
-                                child: Text("Não"),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              )
-                            ],
-                          );
-                          alertDialog.show(context);
-
+                        } else {
+                          //show mensagem erro aqui
                         }
-                    );
+                      });
+                    }, () {
+                      alertDialog = NAlertDialog(
+                        title: Text("Marcar a encomenda como recebida?"),
+                        content: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(encomenda.nome),
+                        ),
+                        actions: [
+                          FlatButton(
+                            child: Text("Sim"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+
+                              encomenda.finalizado = Finalizado.S;
+                              encomenda.dataFinalizado = DateUtil.format(
+                                  new DateTime.now(),
+                                  DateUtil.PATTERN_DATETIME);
+                              encomendaDao
+                                  .save(encomenda)
+                                  .then((value) => {setState(() {})});
+                            },
+                          ),
+                          FlatButton(
+                            child: Text("Não"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      );
+                      alertDialog.show(context);
+                    });
                   },
                   itemCount: encomendList.length,
                 );
@@ -242,13 +231,13 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => NovoRastreioScreen(),
-            ),
-          ).then((novaEncomenda) => {
-            recarregarLista(novaEncomenda)
-          });
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (context) => NovoRastreioScreen(),
+                ),
+              )
+              .then((novaEncomenda) => {recarregarLista(novaEncomenda)});
         },
       ),
     );
@@ -256,14 +245,14 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
 
   recarregarLista(novaEncomenda) {
     setState(() {
-      if (novaEncomenda != null){
+      if (novaEncomenda != null) {
         encomendList.add(novaEncomenda);
       }
     });
   }
 
-  void buscarEncomenda(Encomenda encomenda, Function onBuscada){
-    if (EmpresasDisponiveis.REDESUL == encomenda.empresa){
+  void buscarEncomenda(Encomenda encomenda, Function onBuscada) {
+    if (EmpresasDisponiveis.REDESUL == encomenda.empresa) {
       redeSulClientService.buscarEncomendaRedeSul(encomenda, (updated) {
         progressDialog.dismiss();
         onBuscada(updated);
@@ -271,7 +260,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
         progressDialog.dismiss();
         onBuscada(null);
       });
-    } else if (EmpresasDisponiveis.CORREIOS == encomenda.empresa){
+    } else if (EmpresasDisponiveis.CORREIOS == encomenda.empresa) {
       correioClientService.buscarEncomendaCorreios(encomenda, (updated) {
         progressDialog.dismiss();
         onBuscada(updated);
@@ -290,7 +279,8 @@ class EncomendaItem extends StatelessWidget {
   final Function onRefresh;
   final Function onFinalizar;
 
-  EncomendaItem(this.encomenda, this.onClick, this.onLongPress, this.onRefresh, this.onFinalizar);
+  EncomendaItem(this.encomenda, this.onClick, this.onLongPress, this.onRefresh,
+      this.onFinalizar);
 
   @override
   Widget build(BuildContext context) {
@@ -304,15 +294,18 @@ class EncomendaItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Row(
                       children: [
                         new Text(
-                          encomenda.nome,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          encomenda.nome != null
+                              ? encomenda.nome
+                              : "Encomenda " + encomenda.empresa.descricao,
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         Image.asset(
                           imagemDisponivel(encomenda.empresa),
@@ -321,42 +314,45 @@ class EncomendaItem extends StatelessWidget {
                       ],
                     ),
                     Padding(padding: EdgeInsets.only(top: 4)),
-                      new Text(
-                        "Cod Rastreio " + encomenda.codigoRastreio,
+                    new Text(
+                      "Cod Rastreio " + encomenda.codigoRastreio,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 4)),
+                    new Text(
+                      "Ocorrência: " + encomenda.ultimoStatus,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 8)),
+                    Visibility(
+                      visible: encomenda.ultimaAtualizacao != null,
+                      child: new Text(
+                        "Detalhes: " +
+                            (encomenda.ultimaAtualizacao != null
+                                ? encomenda.ultimaAtualizacao
+                                : "Não informada"),
                         style: TextStyle(fontSize: 14),
                       ),
-                      Padding(padding: EdgeInsets.only(top: 4)),
-                      new Text(
-                        "Ocorrência: " + encomenda.ultimoStatus,
-                        style: TextStyle(fontSize: 14),
+                    ),
+                    new Text(
+                      encomenda.ultimoStatus,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    Visibility(
+                      visible: Finalizado.N == encomenda.finalizado,
+                      child: FlatButton(
+                        onPressed: onFinalizar,
+                        child: Text("Recebi a encomenda"),
                       ),
-                      Padding(padding: EdgeInsets.only(top: 8)),
-                      Visibility(
-                        visible: encomenda.ultimaAtualizacao != null,
-                        child: new Text(
-                          "Detalhes: " + (encomenda.ultimaAtualizacao != null ? encomenda.ultimaAtualizacao : "Não informada"),
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      new Text(
-                        encomenda.ultimoStatus,
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      Visibility(
-                        visible: Finalizado.N == encomenda.finalizado,
-                        child: FlatButton(
-                            onPressed: onFinalizar,
-                            child: Text("Recebi a encomenda"),
-                        ),
-                      ),
+                    ),
                   ],
-                  ),
+                ),
               ),
               IconButton(
                 icon: Icon(Icons.refresh),
                 tooltip: 'Buscando atualização da encomenda',
                 onPressed: () {
-                    onRefresh(encomenda);
+                  onRefresh(encomenda);
                 },
               ),
             ],
@@ -367,10 +363,10 @@ class EncomendaItem extends StatelessWidget {
   }
 
   String imagemDisponivel(EmpresasDisponiveis empresa) {
-    if (EmpresasDisponiveis.REDESUL == empresa){
+    if (EmpresasDisponiveis.REDESUL == empresa) {
       return 'images/rede_sul.png';
     }
-    if (EmpresasDisponiveis.CORREIOS == empresa){
+    if (EmpresasDisponiveis.CORREIOS == empresa) {
       return 'images/correios.jpg';
     }
     return '';

@@ -14,7 +14,7 @@ import 'package:tracking_app/services/api_services/redesul/redesul_client_servic
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
 
-import 'novo_rastreio_screen.dart';
+import 'novo_rastreio/novo_rastreio_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   MeusDadosDao meusDadosDao = new MeusDadosDao();
   EncomendaDao encomendaDao = new EncomendaDao();
   MeusDados meusDados = MeusDadosDao.defaultMeusDados();
-  
+
   RedeSulClientService redeSulClientService = new RedeSulClientService();
 
   String _qtdEncomendasEmRastreio = "0";
@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_primeiraBuscaEncomendasJaFeita){
+    if (!_primeiraBuscaEncomendasJaFeita) {
       carregarEncomendasEmRastreio();
     }
 
@@ -46,13 +46,13 @@ class _HomeScreenState extends State<HomeScreen> {
             UserAccountsDrawerHeader(
               onDetailsPressed: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => MeusDadosScreen(),
-                  ),
-                ).then((value) => {
-                  carregarMeusDados()
-                });
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (context) => MeusDadosScreen(),
+                      ),
+                    )
+                    .then((value) => {carregarMeusDados()});
               },
               decoration: BoxDecoration(
                 image: new DecorationImage(
@@ -63,7 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
               accountName: Text(meusDados.nome),
               accountEmail: Text(meusDados.email),
               currentAccountPicture: CircleAvatar(
-                child: Icon(Icons.person, size: 40,),
+                child: Icon(
+                  Icons.person,
+                  size: 40,
+                ),
               ),
             ),
             ListTile(
@@ -71,13 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text("Meus Dados"),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => MeusDadosScreen(),
-                  ),
-                ).then((value) => {
-                  carregarMeusDados()
-                });
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (context) => MeusDadosScreen(),
+                      ),
+                    )
+                    .then((value) => {carregarMeusDados()});
               },
             ),
             ListTile(
@@ -85,13 +88,13 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text("Rastrear encomendas"),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => RastrearEncomendasScreen(),
-                  ),
-                ).then((value) => {
-                  carregarEncomendasEmRastreio()
-                });
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (context) => RastrearEncomendasScreen(),
+                      ),
+                    )
+                    .then((value) => {carregarEncomendasEmRastreio()});
               },
             ),
             ListTile(
@@ -99,13 +102,13 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text("Encomendas Recebidas"),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => EncomendasFinalizadasScreen(),
-                  ),
-                ).then((value) => {
-                  carregarEncomendasEmRastreio()
-                });
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (context) => EncomendasFinalizadasScreen(),
+                      ),
+                    )
+                    .then((value) => {carregarEncomendasEmRastreio()});
               },
             ),
             ListTile(
@@ -113,21 +116,21 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text("Configurações"),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => MeusDadosScreen(),
-                  ),
-                ).then((value) => {
-                  carregarMeusDados()
-                });
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (context) => MeusDadosScreen(),
+                      ),
+                    )
+                    .then((value) => {carregarMeusDados()});
               },
             ),
             ListTile(
               leading: Icon(Icons.bug_report),
               title: Text("Sugestão/Problema/Reclamação"),
               onTap: () {
-                  Navigator.pop(context);
-                  enviarEmailDesenvolvedor(context);
+                Navigator.pop(context);
+                enviarEmailDesenvolvedor(context);
               },
             ),
             ListTile(
@@ -135,12 +138,13 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text("Doação"),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => DonationScreen(),
-                  ),
-                ).then((value) => {
-                });
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (context) => DonationScreen(),
+                      ),
+                    )
+                    .then((value) => {});
               },
             ),
             ListTile(
@@ -188,13 +192,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Theme.of(context).primaryColor,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => RastrearEncomendasScreen(),
-                      ),
-                    ).then((value) => {
-                      carregarEncomendasEmRastreio()
-                    });
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (context) => RastrearEncomendasScreen(),
+                          ),
+                        )
+                        .then((value) => {carregarEncomendasEmRastreio()});
                   },
                   child: Container(
                     padding: EdgeInsets.all(8.0),
@@ -296,22 +300,22 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => NovoRastreioScreen(),
-            ),
-          ).then((value) => {
-            carregarEncomendasEmRastreio()
-          });
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (context) => NovoRastreioScreen(),
+                ),
+              )
+              .then((value) => {carregarEncomendasEmRastreio()});
         },
       ),
     );
   }
 
   void carregarMeusDados() {
-    meusDadosDao.findById().then((data)  {
+    meusDadosDao.findById().then((data) {
       setState(() {
-        if (data != null){
+        if (data != null) {
           meusDados = data;
         }
       });
@@ -320,12 +324,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void carregarEncomendasEmRastreio() {
     _primeiraBuscaEncomendasJaFeita = true;
-    encomendaDao.findByStatus(Finalizado.S).then((data)  {
+    encomendaDao.findByStatus(Finalizado.S).then((data) {
       setState(() {
         _qtdEncomendasFinalizadas = data.length.toString();
       });
     });
-    encomendaDao.findByStatus(Finalizado.N).then((data)  {
+    encomendaDao.findByStatus(Finalizado.N).then((data) {
       setState(() {
         _qtdEncomendasEmRastreio = data.length.toString();
       });
@@ -336,16 +340,17 @@ class _HomeScreenState extends State<HomeScreen> {
     Email email = Email(
         to: ['paulo20091994@gmail.com'],
         subject: 'Sugestão/Problema/Reclamação TrackinApp',
-        body: 'Olá, escreva aqui sua mensagem'
-    );
+        body: 'Olá, escreva aqui sua mensagem');
     try {
       await EmailLauncher.launch(email);
     } catch (erro) {
       String mensagem = "";
-      if (erro.toString().contains("mail configuration")){
-        mensagem = "Sem email configurado ou aplicativo de email, verifique se seu email esta logado na conta google ou se existe algum app de email instalado";
+      if (erro.toString().contains("mail configuration")) {
+        mensagem =
+            "Sem email configurado ou aplicativo de email, verifique se seu email esta logado na conta google ou se existe algum app de email instalado";
       } else {
-        mensagem = "Ops, ocorreu um problema, mande um email para paulo20091994@gmail.com informando sua sugestão, problema ou reclamação";
+        mensagem =
+            "Ops, ocorreu um problema, mande um email para paulo20091994@gmail.com informando sua sugestão, problema ou reclamação";
       }
       NAlertDialog alertDialog = NAlertDialog(
         title: Text("Envio de Email"),
@@ -364,7 +369,5 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       alertDialog.show(context);
     }
-
   }
-
 }

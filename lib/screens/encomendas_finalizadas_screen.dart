@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracking_app/components/progress_carregando.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/encomenda.dart';
-import 'package:tracking_app/screens/novo_rastreio_screen.dart';
+import 'package:tracking_app/screens/novo_rastreio/novo_rastreio_screen.dart';
 import 'package:tracking_app/screens/rastrear_encomendas_screen.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/utils/date_utils.dart';
@@ -15,7 +15,6 @@ class EncomendasFinalizadasScreen extends StatefulWidget {
 
 class _EncomendasFinalizadasScreenState
     extends State<EncomendasFinalizadasScreen> {
-
   EncomendaDao encomendaDao = new EncomendaDao();
 
   List<Encomenda> encomendaFinalizadaList = List();
@@ -46,8 +45,9 @@ class _EncomendasFinalizadasScreenState
                       Encomenda encomenda = encomendaFinalizadaList[index];
                       return Card(
                         child: ListTile(
-                          title: Text(encomenda.nome+ " " + encomenda.dataFinalizado),
-                          subtitle: Text(encomenda.ultimoStatus ),
+                          title: Text(
+                              encomenda.nome + " " + encomenda.dataFinalizado),
+                          subtitle: Text(encomenda.ultimoStatus),
                         ),
                       );
                     },
@@ -68,9 +68,7 @@ class _EncomendasFinalizadasScreenState
                                   Text(
                                     "Nenhuma Encomenda",
                                     style: TextStyle(
-                                        fontSize: 24.0,
-                                        color: Colors.black54
-                                    ),
+                                        fontSize: 24.0, color: Colors.black54),
                                     textAlign: TextAlign.center,
                                   ),
                                   Image.asset(
@@ -80,13 +78,12 @@ class _EncomendasFinalizadasScreenState
                                   Text(
                                     "Você não tem nenhuma encomenda finalizada",
                                     style: TextStyle(
-                                        fontSize: 20.0,
-                                        color: Colors.black54
-                                    ),
+                                        fontSize: 20.0, color: Colors.black54),
                                     textAlign: TextAlign.center,
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(top: 16, bottom: 16),
+                                    padding:
+                                        EdgeInsets.only(top: 16, bottom: 16),
                                     child: SizedBox(
                                       width: 230,
                                       height: 60,
@@ -94,19 +91,25 @@ class _EncomendasFinalizadasScreenState
                                         child: Text(
                                           "Cadastrar encomenda",
                                           style: TextStyle(
-                                              fontSize: 16, color: Colors.white),
+                                              fontSize: 16,
+                                              color: Colors.white),
                                           textAlign: TextAlign.center,
                                         ),
                                         onPressed: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) => NovoRastreioScreen(),
-                                            ),
-                                          ).then((novaEncomenda) => {
-                                            if (novaEncomenda != null){
-                                              direcionaPaginaDeAcompanhamento(context)
-                                            }
-                                          });
+                                          Navigator.of(context)
+                                              .push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NovoRastreioScreen(),
+                                                ),
+                                              )
+                                              .then((novaEncomenda) => {
+                                                    if (novaEncomenda != null)
+                                                      {
+                                                        direcionaPaginaDeAcompanhamento(
+                                                            context)
+                                                      }
+                                                  });
                                         },
                                       ),
                                     ),
@@ -121,8 +124,7 @@ class _EncomendasFinalizadasScreenState
                   );
                 }
             }
-          }
-      ),
+          }),
     );
   }
 
