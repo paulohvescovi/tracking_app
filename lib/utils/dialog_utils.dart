@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:path/path.dart';
+import 'package:select_dialog/select_dialog.dart';
 
 class DialogUtils {
   static NAlertDialog ok(BuildContext context, String body,
@@ -33,5 +34,18 @@ class DialogUtils {
     );
     progressDialog.show();
     return progressDialog;
+  }
+
+  static SelectDialog select(BuildContext context, String title, List<String> options, Function onSelect) {
+    SelectDialog.showModal<String>(
+      context,
+      showSearchBox: false,
+      label: title,
+      selectedValue: "",
+      items: options,
+      onChange: (String selected) {
+        onSelect(selected);
+      },
+    );
   }
 }

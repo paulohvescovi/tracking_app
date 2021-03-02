@@ -1,16 +1,8 @@
-enum EmpresasDisponiveis {
+enum EmpresasDisponiveis { REDESUL, CORREIOS, SEQUOIA }
 
-  REDESUL,
-  CORREIOS,
-  SEQUOIA
-
-}
-
-
-extension EmpresasDisponiveisDescricao  on EmpresasDisponiveis {
-
+extension EmpresasDisponiveisDescricao on EmpresasDisponiveis {
   String get descricao {
-    switch(this) {
+    switch (this) {
       case EmpresasDisponiveis.REDESUL:
         return "RedeSul Logistica";
       case EmpresasDisponiveis.CORREIOS:
@@ -19,5 +11,4 @@ extension EmpresasDisponiveisDescricao  on EmpresasDisponiveis {
         return "Sequoia";
     }
   }
-
 }

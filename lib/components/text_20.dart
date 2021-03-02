@@ -4,7 +4,7 @@ class Text20 extends StatelessWidget {
   String text;
   TextAlign textAlign = TextAlign.center;
 
-  Text20(this.text, {TextAlign textAlign}) {}
+  Text20(this.text, {TextAlign textAlign});
 
   @override
   Widget build(BuildContext context) {

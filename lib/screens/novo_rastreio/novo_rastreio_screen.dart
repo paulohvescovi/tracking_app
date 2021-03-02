@@ -71,25 +71,14 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                         textAlign: TextAlign.center,
                       ),
                       onPressed: () {
-                        List<String> list = List();
-                        EmpresasDisponiveis.values.forEach((element) {
-                          list.add(element.descricao);
+                        DialogUtils.select(context, "Selecione a Empresa",
+                            obtemOptionsEmpresasDisponiveis(),
+                            (String selected) {
+                          setState(() {
+                            _empresaSelecionada =
+                                obtemEmpresaSelecionada(selected);
+                          });
                         });
-
-                        String ex1 = "Nenhuma empresa selecionada";
-                        SelectDialog.showModal<String>(
-                          context,
-                          showSearchBox: false,
-                          label: "Selecione a empresa",
-                          selectedValue: ex1,
-                          items: list,
-                          onChange: (String selected) {
-                            setState(() {
-                              _empresaSelecionada =
-                                  obtemEmpresaSelecionada(selected);
-                            });
-                          },
-                        );
                       }),
                 ),
                 Padding(padding: EdgeInsets.only(top: 16)),
@@ -316,5 +305,13 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
     if (EmpresasDisponiveis.SEQUOIA.descricao == selected) {
       return EmpresasDisponiveis.SEQUOIA;
     }
+  }
+
+  List<String> obtemOptionsEmpresasDisponiveis() {
+    List<String> list = List();
+    EmpresasDisponiveis.values.forEach((element) {
+      list.add(element.descricao);
+    });
+    return list;
   }
 }
