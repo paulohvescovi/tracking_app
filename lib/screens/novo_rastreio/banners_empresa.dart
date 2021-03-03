@@ -16,7 +16,7 @@ class BannersEmpresa extends StatelessWidget {
           width: 100,
         ),
         Image.asset(
-          'images/sequoia.png',
+          'images/sequoia.jpg',
           width: 100,
         ),
       ],

@@ -1,20 +1,18 @@
-
 import 'package:flutter/material.dart';
 import 'package:tracking_app/models/encomenda.dart';
 import 'package:tracking_app/models/encomenda_detail.dart';
 
 class EncomendaDetalhesScreen extends StatefulWidget {
-
   Encomenda encomenda;
 
   EncomendaDetalhesScreen(this.encomenda);
 
   @override
-  _EncomendaDetalhesScreenState createState() => _EncomendaDetalhesScreenState(encomenda);
+  _EncomendaDetalhesScreenState createState() =>
+      _EncomendaDetalhesScreenState(encomenda);
 }
 
 class _EncomendaDetalhesScreenState extends State<EncomendaDetalhesScreen> {
-
   Encomenda encomenda;
 
   _EncomendaDetalhesScreenState(this.encomenda);

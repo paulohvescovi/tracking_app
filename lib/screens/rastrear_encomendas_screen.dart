@@ -8,6 +8,7 @@ import 'package:tracking_app/screens/encomenda_detalhes_screen.dart';
 import 'package:tracking_app/screens/novo_rastreio/novo_rastreio_screen.dart';
 import 'package:tracking_app/services/api_services/correios/correios_client_service.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
+import 'package:tracking_app/services/api_services/sequoia/sequoia_client_service.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/utils/date_utils.dart';
 
@@ -23,6 +24,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
   EncomendaDao encomendaDao = new EncomendaDao();
   RedeSulClientService redeSulClientService = new RedeSulClientService();
   CorreioClientService correioClientService = new CorreioClientService();
+  SequioaClientService sequioaClientService = new SequioaClientService();
 
   List<Encomenda> encomendList = List();
   ProgressDialog progressDialog;
@@ -268,6 +270,14 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
         progressDialog.dismiss();
         onBuscada(null);
       });
+    } else if (EmpresasDisponiveis.SEQUOIA == encomenda.empresa) {
+      sequioaClientService.buscarEncomendaSequoia(encomenda, (updated) {
+        progressDialog.dismiss();
+        onBuscada(updated);
+      }, () {
+        progressDialog.dismiss();
+        onBuscada(null);
+      });
     }
   }
 }
@@ -307,6 +317,7 @@ class EncomendaItem extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
+                        Padding(padding: EdgeInsets.only(left: 8)),
                         Image.asset(
                           imagemDisponivel(encomenda.empresa),
                           width: 80,
@@ -368,6 +379,9 @@ class EncomendaItem extends StatelessWidget {
     }
     if (EmpresasDisponiveis.CORREIOS == empresa) {
       return 'images/correios.jpg';
+    }
+    if (EmpresasDisponiveis.SEQUOIA == empresa) {
+      return 'images/sequoia.jpg';
     }
     return '';
   }

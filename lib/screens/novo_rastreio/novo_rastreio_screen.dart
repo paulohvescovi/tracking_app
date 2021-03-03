@@ -3,6 +3,7 @@ import 'package:ndialog/ndialog.dart';
 import 'package:path/path.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'package:tracking_app/components/button_grande.dart';
+import 'package:tracking_app/components/custom_textfield.dart';
 import 'package:tracking_app/components/text_20.dart';
 import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/enums/Finalizado.dart';
@@ -12,6 +13,7 @@ import 'package:tracking_app/services/api_services/correios/correios_client_serv
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track.dart';
 import 'package:tracking_app/services/api_services/redesul/models/redesul_track_detail.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
+import 'package:tracking_app/services/api_services/sequoia/models/sequoia_track_header.dart';
 import 'package:tracking_app/services/api_services/sequoia/sequoia_client_service.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
@@ -80,89 +82,59 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
                       children: [
                         Text("Empresa Selecionada"),
                         Padding(padding: EdgeInsets.only(top: 8)),
-                        Text(
+                        Text20(
                           _empresaSelecionada != null
                               ? _empresaSelecionada.descricao
                               : "",
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold),
+                          color: Theme.of(context).primaryColor,
+                          negrito: true,
                         ),
                       ],
                     )),
                 Padding(padding: EdgeInsets.only(top: 8)),
-                Text(
-                  "2º Informe os dados para rastrear",
-                  style: TextStyle(fontSize: 20.0, color: Colors.black87),
-                  textAlign: TextAlign.center,
+                Text20("2º Informe os dados para rastrear"),
+                CustomTextField(
+                  labelText: "Nome da encomenda",
+                  hintText: "Ex: Fone, mouse, celular..",
+                  icon: Icon(Icons.person_outline_sharp),
+                  controller: _nomeEncomendaTextController,
                 ),
-                Padding(padding: EdgeInsets.only(top: 8)),
-                Visibility(
-                  child: TextField(
-                    controller: _nomeEncomendaTextController,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person_outline_sharp),
-                      hintText: 'Ex: Fone, mouse, celular..',
-                      labelText: 'Nome da encomenda',
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
+                CustomTextField(
+                  visibility: _empresaSelecionada.visibilityCnpjCpf,
+                  hintText: 'Informe seu CPF/CNPJ',
+                  labelText: 'CNPJ/CPF',
+                  icon: Icon(Icons.vpn_key),
+                  controller: _cpfEditTextController,
                 ),
-                Padding(padding: EdgeInsets.only(top: 8)),
-                Visibility(
-                  visible: EmpresasDisponiveis.REDESUL == _empresaSelecionada,
-                  child: TextField(
-                    controller: _cpfEditTextController,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.vpn_key),
-                      hintText: 'Informe seu CPF/CNPJ',
-                      labelText: 'CNPJ/CPF',
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
+                CustomTextField(
+                  visibility: _empresaSelecionada.visibilityCodigoPedido,
+                  hintText: 'Informe o Numero do Pedido',
+                  labelText: 'Nº Pedido',
+                  icon: Icon(Icons.person_outline_sharp),
+                  controller: _numeroPedidoTextController,
                 ),
-                Padding(padding: EdgeInsets.only(top: 8)),
-                Visibility(
-                  visible: EmpresasDisponiveis.REDESUL == _empresaSelecionada,
-                  child: TextField(
-                    controller: _numeroPedidoTextController,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person_outline_sharp),
-                      hintText: 'Informe o Numero do Pedido',
-                      labelText: 'Nº Pedido',
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                Padding(padding: EdgeInsets.only(top: 8)),
-                Visibility(
-                  visible: EmpresasDisponiveis.CORREIOS == _empresaSelecionada,
-                  child: TextField(
-                    controller: _numeroRastreioCorreioTextController,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person_outline_sharp),
-                      hintText: 'QD592017502BR',
-                      labelText: 'Código Rastreio',
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
+                CustomTextField(
+                  visibility: _empresaSelecionada.visibilityCodigoRastreio,
+                  hintText: 'QD592017502BR',
+                  labelText: 'Código Rastreio',
+                  icon: Icon(Icons.person_outline_sharp),
+                  controller: _numeroRastreioCorreioTextController,
                 ),
                 Padding(padding: EdgeInsets.only(top: 16)),
                 ButtonGrande(
                   "Buscar encomenda...",
                   onPressed: () {
-                    if (_empresaSelecionada == EmpresasDisponiveis.REDESUL) {
-                      buscarDadosRedeSul(context);
-                    } else if (_empresaSelecionada ==
-                        EmpresasDisponiveis.CORREIOS) {
-                      buscarDadosCorreios(context);
-                    } else if (_empresaSelecionada ==
-                        EmpresasDisponiveis.SEQUOIA) {}
+                    switch (_empresaSelecionada) {
+                      case EmpresasDisponiveis.REDESUL:
+                        buscarDadosRedeSul(context);
+                        break;
+                      case EmpresasDisponiveis.CORREIOS:
+                        buscarDadosCorreios(context);
+                        break;
+                      case EmpresasDisponiveis.SEQUOIA:
+                        buscarDadosSequoia(context);
+                        break;
+                    }
                   },
                 ),
               ],
@@ -178,6 +150,38 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
       meusDadosDao.findById().then((value) => {
             if (value != null) {meusDados = value}
           });
+    });
+  }
+
+  void buscarDadosSequoia(BuildContext context) {
+    //valida os campos
+    if (!informouNumeroDeRastreio()) {
+      DialogUtils.ok(
+          context, "Informe o código de rastreio antes de continuar");
+      return;
+    }
+
+    //obtem as informacoes para buscar a encomenda no correios
+    encomenda.codigoRastreio = obtemCodigoRastreio(EmpresasDisponiveis.SEQUOIA);
+    encomenda.nome = obtemNomeEncomenda(EmpresasDisponiveis.SEQUOIA);
+
+    //exibir o dialog
+    progressDialog =
+        DialogUtils.loading(context, "Buscando encomenda no Sequoia");
+    sequoiaClientService.buscarEncomendaSequoia(encomenda,
+        (Encomenda encomendaSalva) {
+      progressDialog.dismiss();
+      if (encomendaSalva == null) {
+        DialogUtils.ok(context,
+            "Não encontramos a encomenda codigo de rastreio informado");
+      } else {
+        Navigator.pop(context, encomendaSalva);
+      }
+    }, () {
+      progressDialog.dismiss();
+      DialogUtils.ok(context,
+          "Ocorreu um problema ao fazer a busca no SEQUOIA, informe o desenvolvedor pelo menu sugestão/reclamação junto aos dados da encomenda",
+          title: "Erro");
     });
   }
 

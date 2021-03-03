@@ -288,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Padding(padding: EdgeInsets.all(8)),
                   Image.asset(
-                    'images/sequoia.png',
+                    'images/sequoia.jpg',
                     width: 100,
                   ),
                 ],

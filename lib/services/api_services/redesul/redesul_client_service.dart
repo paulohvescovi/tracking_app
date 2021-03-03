@@ -15,9 +15,9 @@ import 'package:tracking_app/utils/date_utils.dart';
 import 'models/redesul_track.dart';
 
 class RedeSulClientService {
-
   Future<RedeSulTrack> findEncomenda(String numeroPedido, String cpf) async {
-    String body = json.encode({"cnpj": cpf, "senha": '', "pedido" : numeroPedido});
+    String body =
+        json.encode({"cnpj": cpf, "senha": '', "pedido": numeroPedido});
 
     Map<String, String> headers = {
       "Host": "ssw.inf.br",
@@ -26,36 +26,41 @@ class RedeSulClientService {
     };
     Response response = null;
     try {
-      response = await  clientRedeSul
-          .post(urlTracking, headers: headers, body: body);
+      response =
+          await clientRedeSul.post(urlTracking, headers: headers, body: body);
     } catch (erro) {
       print(erro.toString());
       return null;
     }
-    if (jsonDecode(response.body)["success"] == false){//nao enconrtou
-      if (jsonDecode(response.body)["message"] == "Nenhum documento localizado"){
+    if (jsonDecode(response.body)["success"] == false) {
+      //nao enconrtou
+      if (jsonDecode(response.body)["message"] ==
+          "Nenhum documento localizado") {
         return null;
       }
     }
     return RedeSulTrack.fromJson(jsonDecode(response.body));
   }
 
-  void buscarEncomendaRedeSul(Encomenda encomenda, Function onSucess, Function onError) async {
+  void buscarEncomendaRedeSul(
+      Encomenda encomenda, Function onSucess, Function onError) async {
     EncomendaDao encomendaDao = new EncomendaDao();
     RedeSulTrack encomendaEncontrada = null;
 
     try {
-      encomendaEncontrada = await findEncomenda(encomenda.codigoRastreio, encomenda.cpf);
+      encomendaEncontrada =
+          await findEncomenda(encomenda.codigoRastreio, encomenda.cpf);
     } catch (erro) {
       onError();
       return;
     }
 
-    if (encomendaEncontrada == null){
+    if (encomendaEncontrada == null) {
       onSucess(null);
       return;
     }
-    encomendaEncontrada.tracking.sort((a,b) => b.getDataHoraEfetiva().compareTo(a.getDataHoraEfetiva()));
+    encomendaEncontrada.tracking.sort(
+        (a, b) => b.getDataHoraEfetiva().compareTo(a.getDataHoraEfetiva()));
     RedeSulTrackDetail ultimoStatusTrackin = encomendaEncontrada.tracking[0];
 
     encomenda.ultimoStatus = ultimoStatusTrackin.ocorrencia;
@@ -69,17 +74,18 @@ class RedeSulClientService {
     encomendaEncontrada.tracking.forEach((trackin) {
       EncomendaDetail encomendaDetail = new EncomendaDetail();
 
-      String dataString = DateUtil.format(trackin.getDataHoraEfetiva(), DateUtil.PATTERN_DATETIME);
+      String dataString = DateUtil.format(
+          trackin.getDataHoraEfetiva(), DateUtil.PATTERN_DATETIME);
 
       encomendaDetail.ocorrencia = trackin.ocorrencia;
       encomendaDetail.cidade = trackin.cidade;
       encomendaDetail.data_hora = dataString;
       encomendaDetail.descricao = trackin.descricao;
 
-      if (trackin.ocorrencia.contains("ENTREGUE")){
+      if (trackin.ocorrencia.contains("ENTREGUE")) {
         encomendaDetail.tipo = "Concluido";
       } else if (trackin.ocorrencia.contains("SAIDA PARA ENTREGA")) {
-        encomendaDetail.tipo = "Quaje chegando";
+        encomendaDetail.tipo = "Quase chegando";
       } else {
         encomendaDetail.tipo = "Em Transporte";
       }
@@ -88,7 +94,5 @@ class RedeSulClientService {
     });
 
     onSucess(encomendaSalva);
-
   }
-
 }
