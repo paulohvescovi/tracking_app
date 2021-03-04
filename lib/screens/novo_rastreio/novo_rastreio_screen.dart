@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
-import 'package:path/path.dart';
-import 'package:select_dialog/select_dialog.dart';
 import 'package:tracking_app/components/button_grande.dart';
 import 'package:tracking_app/components/custom_textfield.dart';
 import 'package:tracking_app/components/text_20.dart';
 import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
-import 'package:tracking_app/enums/Finalizado.dart';
 import 'package:tracking_app/models/encomenda.dart';
 import 'package:tracking_app/models/meus_dados.dart';
 import 'package:tracking_app/services/api_services/correios/correios_client_service.dart';
-import 'package:tracking_app/services/api_services/redesul/models/redesul_track.dart';
-import 'package:tracking_app/services/api_services/redesul/models/redesul_track_detail.dart';
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
-import 'package:tracking_app/services/api_services/sequoia/models/sequoia_track_header.dart';
 import 'package:tracking_app/services/api_services/sequoia/sequoia_client_service.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
-import 'package:tracking_app/utils/date_utils.dart';
 import 'package:tracking_app/utils/dialog_utils.dart';
 
 import 'banners_empresa.dart';
@@ -154,35 +147,42 @@ class _NovoRastreioScreenState extends State<NovoRastreioScreen> {
   }
 
   void buscarDadosSequoia(BuildContext context) {
-    //valida os campos
-    if (!informouNumeroDeRastreio()) {
-      DialogUtils.ok(
-          context, "Informe o código de rastreio antes de continuar");
-      return;
-    }
-
-    //obtem as informacoes para buscar a encomenda no correios
-    encomenda.codigoRastreio = obtemCodigoRastreio(EmpresasDisponiveis.SEQUOIA);
-    encomenda.nome = obtemNomeEncomenda(EmpresasDisponiveis.SEQUOIA);
-
-    //exibir o dialog
-    progressDialog =
-        DialogUtils.loading(context, "Buscando encomenda no Sequoia");
-    sequoiaClientService.buscarEncomendaSequoia(encomenda,
-        (Encomenda encomendaSalva) {
-      progressDialog.dismiss();
-      if (encomendaSalva == null) {
-        DialogUtils.ok(context,
-            "Não encontramos a encomenda codigo de rastreio informado");
-      } else {
-        Navigator.pop(context, encomendaSalva);
+    try {
+      //valida os campos
+      if (!informouNumeroDeRastreio()) {
+        DialogUtils.ok(
+            context, "Informe o código de rastreio antes de continuar");
+        return;
       }
-    }, () {
-      progressDialog.dismiss();
-      DialogUtils.ok(context,
-          "Ocorreu um problema ao fazer a busca no SEQUOIA, informe o desenvolvedor pelo menu sugestão/reclamação junto aos dados da encomenda",
-          title: "Erro");
-    });
+
+      //obtem as informacoes para buscar a encomenda no correios
+      encomenda.codigoRastreio =
+          obtemCodigoRastreio(EmpresasDisponiveis.SEQUOIA);
+      encomenda.nome = obtemNomeEncomenda(EmpresasDisponiveis.SEQUOIA);
+
+      //exibir o dialog
+      progressDialog =
+          DialogUtils.loading(context, "Buscando encomenda no Sequoia");
+      sequoiaClientService.buscarEncomenda(encomenda,
+          (Encomenda encomendaSalva) {
+        progressDialog.dismiss();
+        if (encomendaSalva == null) {
+          DialogUtils.ok(context,
+              "Não encontramos a encomenda codigo de rastreio informado");
+        } else {
+          Navigator.pop(context, encomendaSalva);
+        }
+      }, () {
+        progressDialog.dismiss();
+        DialogUtils.ok(context,
+            "Ocorreu um problema ao fazer a busca no SEQUOIA, informe o desenvolvedor pelo menu sugestão/reclamação junto aos dados da encomenda",
+            title: "Erro");
+      });
+    } catch (error) {
+      progressDialog.dismiss;
+      DialogUtils.ok(
+          context, "Não encontramos a encomenda codigo de rastreio informado");
+    }
   }
 
   void buscarDadosCorreios(BuildContext context) {

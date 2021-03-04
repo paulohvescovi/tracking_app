@@ -13,7 +13,6 @@ import 'package:tracking_app/services/api_services/redesul/redesul_api_config.da
 import 'package:tracking_app/services/api_services/redesul/redesul_client_service.dart';
 import 'package:tracking_app/services/database_services/encomenda_dao.dart';
 import 'package:tracking_app/services/database_services/meus_dados_dao.dart';
-
 import 'novo_rastreio/novo_rastreio_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -265,11 +264,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Image.asset(
                     'images/rede_sul.png',
-                    width: 150,
+                    width: 100,
+                  ),
+                  SizedBox(
+                    width: 10,
                   ),
                   Image.asset(
                     'images/correios.jpg',
-                    width: 150,
+                    width: 100,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Image.asset(
+                    'images/sequoia.jpg',
+                    width: 100,
                   ),
                 ],
               ),
@@ -288,8 +297,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Padding(padding: EdgeInsets.all(8)),
                   Image.asset(
-                    'images/sequoia.jpg',
-                    width: 100,
+                    'images/jadlog.png',
+                    width: 120,
                   ),
                 ],
               ),

@@ -271,7 +271,7 @@ class _RastrearEncomendasScreenState extends State<RastrearEncomendasScreen> {
         onBuscada(null);
       });
     } else if (EmpresasDisponiveis.SEQUOIA == encomenda.empresa) {
-      sequioaClientService.buscarEncomendaSequoia(encomenda, (updated) {
+      sequioaClientService.buscarEncomenda(encomenda, (updated) {
         progressDialog.dismiss();
         onBuscada(updated);
       }, () {

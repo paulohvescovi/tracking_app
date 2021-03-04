@@ -9,19 +9,15 @@ class RedeSulTrack {
   RedeSulTrackHeader _header;
   List<RedeSulTrackDetail> _tracking;
 
-  RedeSulTrack(
-      this._success,
-      this._message,
-      this._header,
-      this._tracking);
+  RedeSulTrack(this._success, this._message, this._header, this._tracking);
 
-  RedeSulTrack.fromJson(Map<String, dynamic> json):
-        _success = json['success'],
+  RedeSulTrack.fromJson(Map<String, dynamic> json)
+      : _success = json['success'],
         _message = json['message'],
         _header = RedeSulTrackHeader.fromJson(json['header']),
         _tracking = getDetails(json['tracking']);
 
-  static List<RedeSulTrackDetail> getDetails(List<dynamic> values){
+  static List<RedeSulTrackDetail> getDetails(List<dynamic> values) {
     List<RedeSulTrackDetail> retorno = List();
     for (var value in values) {
       var redeSulTrackDetail = RedeSulTrackDetail.fromJson(value);
