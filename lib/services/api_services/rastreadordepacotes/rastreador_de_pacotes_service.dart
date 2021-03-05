@@ -1,3 +1,4 @@
+import 'package:tracking_app/enums/EmpresasDisponiveis.dart';
 import 'package:tracking_app/models/encomenda.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
@@ -6,11 +7,18 @@ import 'package:tracking_app/services/api_services/rastreadordepacotes/models/ra
 import 'dart:convert';
 
 class RastreadorDePacotesService {
-  buscarEncomendaSequoia(String codigoRastreio,
+  buscarEncomenda(
+      EmpresasDisponiveis empresasDisponiveis, String codigoRastreio,
       {Function onSucess, Function onError}) async {
-    http.Response response = await http.get(
-        'https://www.rastreadordepacotes.com.br/rastreio/sequoia/' +
-            codigoRastreio);
+    String url = "https://www.rastreadordepacotes.com.br/rastreio/";
+
+    if (EmpresasDisponiveis.SEQUOIA == empresasDisponiveis) {
+      url = url + "sequoia/";
+    }
+    if (EmpresasDisponiveis.CORREIOS == empresasDisponiveis) {
+      url = url + ""; //..com.br/rastreio/LB520428724SE
+    }
+    http.Response response = await http.get(url + codigoRastreio);
 
     dom.Document document = parser.parse(response.body);
 

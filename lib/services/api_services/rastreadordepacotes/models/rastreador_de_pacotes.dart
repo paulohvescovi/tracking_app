@@ -90,10 +90,12 @@ class RastreadorDePacotes {
   static List<RastreadorDePacotesInformacoesRemessa> getInformacoesRemessa(
       List<dynamic> values) {
     List<RastreadorDePacotesInformacoesRemessa> retorno = List();
-    for (var value in values) {
-      var redeSulTrackDetail =
-          RastreadorDePacotesInformacoesRemessa.fromJson(value);
-      retorno.add(redeSulTrackDetail);
+    if (values != null) {
+      for (var value in values) {
+        var redeSulTrackDetail =
+            RastreadorDePacotesInformacoesRemessa.fromJson(value);
+        retorno.add(redeSulTrackDetail);
+      }
     }
     return retorno;
   }

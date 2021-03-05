@@ -122,8 +122,9 @@ class SequioaClientService {
   // }
 
   buscarEncomenda(Encomenda encomenda, Function onSucess, Function onError) {
-    rastreadorDePacotesService.buscarEncomendaSequoia(encomenda.codigoRastreio,
-        onSucess: (RastreadorDePacotes enc) {
+    rastreadorDePacotesService
+        .buscarEncomenda(EmpresasDisponiveis.SEQUOIA, encomenda.codigoRastreio,
+            onSucess: (RastreadorDePacotes enc) {
       if (enc == null) {
         onSucess(null);
         return;
